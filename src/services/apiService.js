@@ -1,6 +1,7 @@
 // ✅ URL del backend en Coolify (hardcodeada temporalmente)
 // ✅ URL del backend en Coolify (hardcodeada temporalmente)
-const API_URL = import.meta.env.VITE_API_URL || 'http://e2k5x0g59y9wbs81wnnjnnhp.2.24.111.114.sslip.io:8086/api/v1/';// Manejo de errores
+const API_URL = import.meta.env.VITE_API_URL || 'http://e2k5x0g59y9wbs81wnnjnnhp.2.24.111.114.sslip.io:8080/api/v1/';
+
 const handleResponse = async (response) => {
     if (!response.ok) {
         const errorData = await response.text();
