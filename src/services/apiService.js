@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:8080/api/v1/';
+// ✅ URL del backend en Coolify (hardcodeada temporalmente)
+const API_URL = 'http://e2k5x0g59y9wbs81wnnjnnhp.2.24.111.114.sslip.io:8081/api/v1/';
 
 // Manejo de errores
 const handleResponse = async (response) => {
@@ -10,7 +11,7 @@ const handleResponse = async (response) => {
     return await response.json();
 };
 
-// ✅ Obtener headers con token - CORREGIDO
+// Obtener headers con token
 const getHeaders = () => {
     const token = localStorage.getItem('token');
     console.log('🔑 Token en headers:', token ? '✅ Token existe' : '❌ No hay token');
