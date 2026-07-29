@@ -25,7 +25,7 @@ const CategoriasList = ({ navegar }) => {
     };
 
     const eliminar = async (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar esta categoría? Esta acción no se puede deshacer.')) {
+        if (window.confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
             setEliminandoId(id);
             try {
                 await apiService.eliminarCategoria(id);
@@ -93,7 +93,7 @@ const CategoriasList = ({ navegar }) => {
             paddingRight: '24px',
             boxSizing: 'border-box'
         }}>
-            {/* Header Superior Estilizado */}
+            {/* Header */}
             <div style={{ 
                 background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', 
                 borderRadius: '24px', 
@@ -165,6 +165,7 @@ const CategoriasList = ({ navegar }) => {
                         <ShieldCheck style={{ width: '18px', height: '18px', color: '#34d399' }} />
                         <span style={{ fontSize: '11px', fontWeight: '600', color: '#e2e8f0' }}>Control Activo</span>
                     </div>
+                    {/* ✅ BOTÓN CORREGIDO - Ahora navega a 'categorias' */}
                     <button
                         onClick={() => navegar('categorias', 'crear')}
                         style={{
@@ -197,7 +198,7 @@ const CategoriasList = ({ navegar }) => {
                 </div>
             </div>
 
-            {/* Barra de Búsqueda y Filtros - Modo Oscuro */}
+            {/* Buscador */}
             <div style={{ 
                 background: '#1e293b', 
                 borderRadius: '20px', 
@@ -251,7 +252,7 @@ const CategoriasList = ({ navegar }) => {
                 </div>
             </div>
 
-            {/* Listado en Grid de Tarjetas - Modo Oscuro */}
+            {/* Listado */}
             <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
@@ -312,7 +313,6 @@ const CategoriasList = ({ navegar }) => {
                                 </div>
                             </div>
 
-                            {/* Botones de Acción - Modo Oscuro */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                                 <button 
                                     onClick={() => navegar('categorias', 'editar', cat.id)} 
@@ -386,7 +386,6 @@ const CategoriasList = ({ navegar }) => {
                 })}
             </div>
 
-            {/* Estado Vacío - Modo Oscuro */}
             {categoriasFiltradas.length === 0 && (
                 <div style={{ 
                     background: '#1e293b', 

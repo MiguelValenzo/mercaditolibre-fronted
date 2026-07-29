@@ -232,32 +232,34 @@ export const apiService = {
         });
         return handleResponse(response);
     },
+crearProveedor: async (proveedor) => {
+    console.log('📦 Creando proveedor:', proveedor);
+    const response = await fetch(API_URL + 'proveedores', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(proveedor),
+    });
+    return handleResponse(response);
+},
 
-    crearProveedor: async (proveedor) => {
-        const response = await fetch(API_URL + 'proveedores', {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(proveedor),
-        });
-        return handleResponse(response);
-    },
+actualizarProveedor: async (id, proveedor) => {
+    console.log('📦 Actualizando proveedor:', id, proveedor);
+    const response = await fetch(API_URL + 'proveedores/' + id, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(proveedor),
+    });
+    return handleResponse(response);
+},
 
-    actualizarProveedor: async (id, proveedor) => {
-        const response = await fetch(API_URL + 'proveedores/' + id, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(proveedor),
-        });
-        return handleResponse(response);
-    },
-
-    eliminarProveedor: async (id) => {
-        const response = await fetch(API_URL + 'proveedores/' + id, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        return handleResponse(response);
-    },
+eliminarProveedor: async (id) => {
+    console.log('🗑️ Eliminando proveedor:', id);
+    const response = await fetch(API_URL + 'proveedores/' + id, {
+        method: 'DELETE',
+        headers: getHeaders()
+    });
+    return handleResponse(response);
+},
 
     // =============================================
     // VENTAS

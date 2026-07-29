@@ -5,7 +5,6 @@ import AdminDashboard from './AdminDashboard';
 import ProductosList from './productos/ProductosList';
 import ProductoCrear from './productos/ProductoCrear';
 import ProductoEditar from './productos/ProductoEditar';
-// ✅ CORREGIDO: C mayúscula
 import CategoriasList from './Categorias/CategoriasList';
 import CategoriaCrear from './Categorias/CategoriaCrear';
 import CategoriaEditar from './Categorias/CategoriaEditar';
@@ -22,13 +21,8 @@ const AdminPanel = () => {
     const [editandoId, setEditandoId] = useState(null);
     const [verId, setVerId] = useState(null);
 
-    // Navegación - mantiene el historial
-    const [historial, setHistorial] = useState([]);
-
+    // ✅ Función de navegación CORREGIDA
     const navegar = (seccion, sub = 'list', id = null) => {
-        // Guardar en historial antes de navegar
-        setHistorial(prev => [...prev, { seccion, sub, id }]);
-        
         setSeccionActual(seccion);
         setSubSeccion(sub);
         if (id) {
@@ -40,26 +34,11 @@ const AdminPanel = () => {
         }
     };
 
+    // ✅ Función para volver (opcional)
     const volver = () => {
-        if (historial.length > 0) {
-            const anterior = historial[historial.length - 1];
-            setHistorial(prev => prev.slice(0, -1));
-            
-            setSeccionActual(anterior.seccion);
-            setSubSeccion(anterior.sub);
-            if (anterior.id) {
-                if (anterior.sub === 'editar') setEditandoId(anterior.id);
-                if (anterior.sub === 'ver') setVerId(anterior.id);
-            } else {
-                setEditandoId(null);
-                setVerId(null);
-            }
-        } else {
-            // Si no hay historial, volver al listado de la sección actual
-            setSubSeccion('list');
-            setEditandoId(null);
-            setVerId(null);
-        }
+        setSubSeccion('list');
+        setEditandoId(null);
+        setVerId(null);
     };
 
     const renderSeccion = () => {
@@ -101,11 +80,9 @@ const AdminPanel = () => {
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             overflow: 'hidden'
         }}>
-            {/* Barra lateral de navegación */}
             <AdminSidebar 
                 seccionActual={seccionActual} 
                 setSeccionActual={(seccion) => {
-                    setHistorial([]); // Limpiar historial al cambiar de sección principal
                     setSeccionActual(seccion);
                     setSubSeccion('list');
                     setEditandoId(null);
@@ -113,7 +90,6 @@ const AdminPanel = () => {
                 }} 
             />
 
-            {/* Contenedor principal de la interfaz */}
             <div style={{
                 flex: 1,
                 display: 'flex',
