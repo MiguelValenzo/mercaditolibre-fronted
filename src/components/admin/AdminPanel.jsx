@@ -64,28 +64,28 @@ const AdminPanel = () => {
     const renderSeccion = () => {
         // Productos
         if (seccionActual === 'productos') {
-            if (subSeccion === 'crear') return <ProductoCrear navegar={navegar} volver={volver} />;
-            if (subSeccion === 'editar') return <ProductoEditar id={editandoId} navegar={navegar} volver={volver} />;
+            if (subSeccion === 'crear') return <ProductoCrear navegar={navegar} />;
+            if (subSeccion === 'editar') return <ProductoEditar productoId={editandoId} navegar={navegar} />;
             return <ProductosList navegar={navegar} />;
         }
 
         // Categorías
         if (seccionActual === 'categorias') {
-            if (subSeccion === 'crear') return <CategoriaCrear navegar={navegar} volver={volver} />;
-            if (subSeccion === 'editar') return <CategoriaEditar id={editandoId} navegar={navegar} volver={volver} />;
+            if (subSeccion === 'crear') return <CategoriaCrear navegar={navegar} />;
+            if (subSeccion === 'editar') return <CategoriaEditar id={editandoId} navegar={navegar} />;
             return <CategoriasList navegar={navegar} />;
         }
 
         // Proveedores
         if (seccionActual === 'proveedores') {
-            if (subSeccion === 'crear') return <ProveedorCrear navegar={navegar} volver={volver} />;
-            if (subSeccion === 'editar') return <ProveedorEditar id={editandoId} navegar={navegar} volver={volver} />;
+            if (subSeccion === 'crear') return <ProveedorCrear navegar={navegar} />;
+            if (subSeccion === 'editar') return <ProveedorEditar id={editandoId} navegar={navegar} />;
             return <ProveedoresList navegar={navegar} />;
         }
 
         // Ventas
         if (seccionActual === 'ventas') {
-            if (subSeccion === 'ver') return <VentaDetalle id={verId} navegar={navegar} volver={volver} />;
+            if (subSeccion === 'ver') return <VentaDetalle id={verId} navegar={navegar} />;
             return <VentasList navegar={navegar} />;
         }
 
@@ -93,20 +93,40 @@ const AdminPanel = () => {
     };
 
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div style={{
+            display: 'flex',
+            height: '100vh',
+            background: '#0f172a',
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+            overflow: 'hidden'
+        }}>
+            {/* Barra lateral de navegación */}
             <AdminSidebar 
                 seccionActual={seccionActual} 
                 setSeccionActual={(seccion) => {
-                    setHistorial([]); // Limpiar historial al cambiar de sección
+                    setHistorial([]); // Limpiar historial al cambiar de sección principal
                     setSeccionActual(seccion);
                     setSubSeccion('list');
                     setEditandoId(null);
                     setVerId(null);
                 }} 
             />
-            <div className="flex-1 flex flex-col overflow-hidden">
+
+            {/* Contenedor principal de la interfaz */}
+            <div style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                minWidth: 0,
+                overflow: 'hidden'
+            }}>
                 <AdminHeader />
-                <main className="flex-1 overflow-y-auto p-6">
+                <main style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    background: '#0f172a',
+                    padding: '0'
+                }}>
                     {renderSeccion()}
                 </main>
             </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { apiService } from '../services/apiService';
-import { CreditCard, CheckCircle2, ShieldAlert, Loader2, Play } from 'lucide-react';
+import { CreditCard, CheckCircle2, ShieldAlert, Loader2, Play, Sparkles, ShieldCheck, ShoppingBag } from 'lucide-react';
 
 // Clave pública de prueba de Stripe
 const stripePromise = loadStripe('pk_test_51TwjpTFagauFC90G5GDZcRYoezv40ebwuXCJs0fsOb32sDS1wY12ZVm0NpLpKnund3PafOIHJzoyml7NxzuQQz1000xrTWQPIH');
@@ -15,16 +15,29 @@ const PaymentForm = ({ venta, onPaymentSuccess, setVistaActual }) => {
     const [procesando, setProcesando] = useState(false);
     const [error, setError] = useState('');
     const [simulating, setSimulating] = useState(false);
+    const [modoPrueba, setModoPrueba] = useState(false);
 
     useEffect(() => {
         const getSecret = async () => {
             try {
                 const res = await apiService.crearIntencionPago(venta.id);
-                if (res && res.clientSecret) {
+                console.log('📦 Respuesta de Stripe:', res);
+                
+                if (res && res.modoPrueba) {
+                    // ✅ Si el backend dice que está en modo prueba
+                    setModoPrueba(true);
+                    setError('Stripe no está configurado. Usa el Simulador de Pago.');
+                } else if (res && res.clientSecret) {
                     setClientSecret(res.clientSecret);
+                    setModoPrueba(false);
+                } else {
+                    setModoPrueba(true);
+                    setError('No se pudo inicializar Stripe. Usa el Simulador de Pago.');
                 }
             } catch (err) {
-                console.warn('No se pudo inicializar Stripe. Se usará el simulador de pago.', err);
+                console.warn('⚠️ No se pudo inicializar Stripe:', err);
+                setModoPrueba(true);
+                setError('Error al conectar con Stripe. Usa el Simulador de Pago.');
             }
         };
         if (venta && venta.id) {
@@ -34,8 +47,15 @@ const PaymentForm = ({ venta, onPaymentSuccess, setVistaActual }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // ✅ Si estamos en modo prueba, mostrar mensaje
+        if (modoPrueba) {
+            setError('Stripe no está configurado. Usa el botón "Simular Pago Exitoso"');
+            return;
+        }
+
         if (!stripe || !elements || !clientSecret) {
-            setError('Stripe no está inicializado o la clave es incorrecta. Usa el Simulador de Pago abajo.');
+            setError('Stripe no está inicializado correctamente. Usa el Simulador de Pago.');
             return;
         }
 
@@ -69,31 +89,199 @@ const PaymentForm = ({ venta, onPaymentSuccess, setVistaActual }) => {
             await apiService.confirmarPagoVenta(venta.id);
             onPaymentSuccess();
         } catch (err) {
-            setError('Error al conectar con la API local para simular el pago.');
+            setError('Error al conectar con la API para simular el pago.');
         } finally {
             setSimulating(false);
         }
     };
 
+    // ✅ Si está en modo prueba, mostrar solo el simulador
+    if (modoPrueba) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div style={{
+                    background: 'rgba(245, 158, 11, 0.15)',
+                    border: '1px solid rgba(245, 158, 11, 0.3)',
+                    padding: '16px 20px',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '12px',
+                    color: '#fbbf24',
+                    fontSize: '13px',
+                    fontWeight: '600'
+                }}>
+                    <ShieldAlert style={{ width: '20px', height: '20px', flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                        <strong>Stripe no está configurado:</strong>
+                        <p style={{ margin: '4px 0 0 0', fontWeight: '400', color: '#94a3b8' }}>
+                            Para usar pagos reales, configura la clave secreta de Stripe en el backend.
+                            Mientras tanto, usa el simulador de pago.
+                        </p>
+                    </div>
+                </div>
+
+                <div style={{
+                    background: 'rgba(16, 185, 129, 0.15)',
+                    borderRadius: '16px',
+                    padding: '24px',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                            width: '48px',
+                            height: '48px',
+                            background: 'rgba(16, 185, 129, 0.2)',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#6ee7b7'
+                        }}>
+                            <Play style={{ width: '24px', height: '24px' }} />
+                        </div>
+                        <div>
+                            <h4 style={{
+                                fontSize: '15px',
+                                fontWeight: '800',
+                                color: '#f1f5f9',
+                                margin: 0
+                            }}>
+                                Simulador de Pago
+                            </h4>
+                            <p style={{
+                                fontSize: '12px',
+                                color: '#94a3b8',
+                                margin: '2px 0 0 0'
+                            }}>
+                                Prueba el flujo completo de compra sin usar Stripe
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleSimulatePayment}
+                        disabled={simulating}
+                        style={{
+                            width: '100%',
+                            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                            color: '#ffffff',
+                            padding: '16px',
+                            borderRadius: '14px',
+                            border: 'none',
+                            fontWeight: '700',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            cursor: simulating ? 'not-allowed' : 'pointer',
+                            opacity: simulating ? 0.7 : 1,
+                            boxShadow: '0 10px 20px -5px rgba(16, 185, 129, 0.4)',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!simulating) {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 16px 30px -8px rgba(16, 185, 129, 0.5)';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!simulating) {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(16, 185, 129, 0.4)';
+                            }
+                        }}
+                    >
+                        {simulating ? (
+                            <>
+                                <Loader2 style={{ width: '18px', height: '18px', animation: 'spin 1s linear infinite' }} />
+                                <span>Simulando pago...</span>
+                            </>
+                        ) : (
+                            <>
+                                <CheckCircle2 style={{ width: '18px', height: '18px' }} />
+                                <span>Simular Pago Exitoso (${venta.total.toFixed(2)} MXN)</span>
+                            </>
+                        )}
+                    </button>
+
+                    <p style={{
+                        fontSize: '11px',
+                        color: '#64748b',
+                        margin: 0,
+                        textAlign: 'center'
+                    }}>
+                        ⚡ Esto actualizará la base de datos sin usar Stripe
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    // ✅ Si no está en modo prueba, mostrar el formulario normal
     return (
-        <div className="space-y-6">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {error && (
-                <div className="bg-red-50 text-red-700 p-4 rounded-xl flex items-start gap-2.5 border border-red-200 text-sm">
-                    <ShieldAlert className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <div style={{
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    border: '1px solid #7f1d1d',
+                    padding: '16px 20px',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '12px',
+                    color: '#fca5a5',
+                    fontSize: '13px',
+                    fontWeight: '600'
+                }}>
+                    <ShieldAlert style={{ width: '20px', height: '20px', color: '#f87171', flexShrink: 0, marginTop: '2px' }} />
                     <div>{error}</div>
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="bg-gray-50 p-5 rounded-2xl border border-gray-200 space-y-4">
-                <label className="block text-sm font-semibold text-gray-700">Tarjeta de Crédito o Débito</label>
-                <div className="bg-white p-4 rounded-xl border border-gray-300">
+            <form onSubmit={handleSubmit} style={{
+                background: '#0f172a',
+                padding: '20px',
+                borderRadius: '16px',
+                border: '1px solid #334155',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px'
+            }}>
+                <label style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    color: '#94a3b8'
+                }}>
+                    Tarjeta de Crédito o Débito
+                </label>
+                <div style={{
+                    background: '#0f172a',
+                    padding: '16px',
+                    borderRadius: '14px',
+                    border: '1.5px solid #334155',
+                    transition: 'all 0.2s ease'
+                }}>
                     <CardElement options={{
                         style: {
                             base: {
                                 fontSize: '16px',
-                                color: '#1f2937',
-                                '::placeholder': { color: '#9ca3af' },
+                                color: '#f1f5f9',
+                                '::placeholder': { color: '#64748b' },
+                                iconColor: '#818cf8',
                             },
+                            invalid: {
+                                color: '#f87171',
+                                iconColor: '#f87171',
+                            }
                         }
                     }} />
                 </div>
@@ -101,31 +289,105 @@ const PaymentForm = ({ venta, onPaymentSuccess, setVistaActual }) => {
                 <button
                     type="submit"
                     disabled={!stripe || procesando || !clientSecret}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-3.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    style={{
+                        width: '100%',
+                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                        color: '#ffffff',
+                        padding: '14px',
+                        borderRadius: '14px',
+                        border: 'none',
+                        fontWeight: '700',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '10px',
+                        cursor: procesando ? 'not-allowed' : 'pointer',
+                        opacity: (!stripe || procesando || !clientSecret) ? 0.5 : 1,
+                        boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.4)',
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                        if (!procesando && stripe && clientSecret) {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 16px 30px -8px rgba(79, 70, 229, 0.5)';
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (!procesando && stripe && clientSecret) {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(79, 70, 229, 0.4)';
+                        }
+                    }}
                 >
                     {procesando ? (
                         <>
-                            <Loader2 className="w-5 h-5 animate-spin" /> Procesando pago con Stripe...
+                            <Loader2 style={{ width: '18px', height: '18px', animation: 'spin 1s linear infinite' }} />
+                            <span>Procesando pago con Stripe...</span>
                         </>
                     ) : (
                         <>
-                            <CreditCard className="w-5 h-5" /> Pagar Ahora (${venta.total.toFixed(2)} MXN)
+                            <CreditCard style={{ width: '18px', height: '18px' }} />
+                            <span>Pagar Ahora (${venta.total.toFixed(2)} MXN)</span>
                         </>
                     )}
                 </button>
             </form>
 
-            <div className="relative flex items-center justify-center">
-                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"></div></div>
-                <span className="relative bg-white px-4 text-xs font-bold text-gray-400 uppercase tracking-widest">O de Respaldo</span>
+            <div style={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}>
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center'
+                }}>
+                    <div style={{ width: '100%', borderTop: '1px solid #334155' }}></div>
+                </div>
+                <span style={{
+                    position: 'relative',
+                    background: '#0f172a',
+                    padding: '0 16px',
+                    fontSize: '10px',
+                    fontWeight: '800',
+                    color: '#64748b',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                }}>
+                    O de Respaldo
+                </span>
             </div>
 
-            <div className="bg-amber-50 rounded-2xl p-5 border border-amber-200 space-y-3">
-                <div className="flex items-start gap-2.5">
-                    <ShieldAlert className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div style={{
+                background: 'rgba(245, 158, 11, 0.1)',
+                borderRadius: '16px',
+                padding: '20px',
+                border: '1px solid rgba(245, 158, 11, 0.2)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <ShieldAlert style={{ width: '20px', height: '20px', color: '#fbbf24', flexShrink: 0, marginTop: '2px' }} />
                     <div>
-                        <h4 className="text-sm font-bold text-amber-800">Simulador de Pago de Pruebas</h4>
-                        <p className="text-xs text-amber-700 mt-0.5">
+                        <h4 style={{
+                            fontSize: '13px',
+                            fontWeight: '800',
+                            color: '#fbbf24',
+                            margin: 0
+                        }}>
+                            Simulador de Pago de Pruebas
+                        </h4>
+                        <p style={{
+                            fontSize: '12px',
+                            color: '#94a3b8',
+                            margin: '4px 0 0 0',
+                            lineHeight: '1.5'
+                        }}>
                             Si estás usando las claves de Stripe por defecto o si no tienes internet, puedes simular una transacción exitosa para actualizar la base de datos.
                         </p>
                     </div>
@@ -135,19 +397,51 @@ const PaymentForm = ({ venta, onPaymentSuccess, setVistaActual }) => {
                     type="button"
                     onClick={handleSimulatePayment}
                     disabled={simulating}
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer text-sm"
+                    style={{
+                        width: '100%',
+                        background: 'rgba(245, 158, 11, 0.2)',
+                        color: '#fbbf24',
+                        padding: '12px',
+                        borderRadius: '14px',
+                        border: '1px solid rgba(245, 158, 11, 0.3)',
+                        fontWeight: '700',
+                        fontSize: '13px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        cursor: simulating ? 'not-allowed' : 'pointer',
+                        opacity: simulating ? 0.5 : 1,
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                        if (!simulating) {
+                            e.currentTarget.style.background = 'rgba(245, 158, 11, 0.3)';
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (!simulating) {
+                            e.currentTarget.style.background = 'rgba(245, 158, 11, 0.2)';
+                        }
+                    }}
                 >
                     {simulating ? (
                         <>
-                            <Loader2 className="w-4 h-4 animate-spin" /> Simulando...
+                            <Loader2 style={{ width: '16px', height: '16px', animation: 'spin 1s linear infinite' }} />
+                            <span>Simulando...</span>
                         </>
                     ) : (
                         <>
-                            <Play className="w-4 h-4" /> Simular Pago Exitoso (Recomendado para Pruebas)
+                            <Play style={{ width: '16px', height: '16px' }} />
+                            <span>Simular Pago Exitoso (Recomendado para Pruebas)</span>
                         </>
                     )}
                 </button>
             </div>
+
+            <style>{`
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            `}</style>
         </div>
     );
 };
@@ -157,12 +451,67 @@ export const CheckoutForm = ({ ventaActiva, setVistaActual }) => {
 
     if (!ventaActiva) {
         return (
-            <div className="max-w-md mx-auto my-12 bg-white rounded-2xl p-8 border border-gray-200 text-center shadow-sm">
-                <h3 className="font-bold text-lg text-gray-800">No hay ninguna venta activa</h3>
-                <p className="text-gray-500 text-sm mt-1">Regresa al catálogo y añade productos para realizar el pago.</p>
+            <div style={{
+                maxWidth: '480px',
+                margin: '48px auto',
+                background: '#1e293b',
+                borderRadius: '24px',
+                padding: '32px',
+                border: '1px solid #334155',
+                textAlign: 'center',
+                boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.3)'
+            }}>
+                <div style={{
+                    width: '64px',
+                    height: '64px',
+                    background: 'rgba(79, 70, 229, 0.15)',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(79, 70, 229, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 16px auto',
+                    color: '#818cf8'
+                }}>
+                    <ShoppingBag style={{ width: '32px', height: '32px' }} />
+                </div>
+                <h3 style={{
+                    fontSize: '18px',
+                    fontWeight: '800',
+                    color: '#f1f5f9',
+                    margin: '0 0 8px 0'
+                }}>
+                    No hay ninguna venta activa
+                </h3>
+                <p style={{
+                    fontSize: '13px',
+                    color: '#94a3b8',
+                    margin: '0 0 20px 0'
+                }}>
+                    Regresa al catálogo y añade productos para realizar el pago.
+                </p>
                 <button
                     onClick={() => setVistaActual('catalogo')}
-                    className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-xl text-sm font-bold cursor-pointer"
+                    style={{
+                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                        color: '#ffffff',
+                        padding: '12px 24px',
+                        borderRadius: '14px',
+                        border: 'none',
+                        fontWeight: '700',
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.4)',
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 16px 30px -8px rgba(79, 70, 229, 0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(79, 70, 229, 0.4)';
+                    }}
                 >
                     Ver Catálogo
                 </button>
@@ -176,27 +525,108 @@ export const CheckoutForm = ({ ventaActiva, setVistaActual }) => {
 
     if (pagado) {
         return (
-            <div className="max-w-md mx-auto my-12 bg-white rounded-2xl p-8 border border-gray-100 text-center shadow-xl space-y-5 animate-fade-in-down">
-                <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto animate-bounce" />
-                <div className="space-y-1">
-                    <h2 className="text-2xl font-black text-gray-800">¡Pago Exitoso!</h2>
-                    <p className="text-sm text-gray-500">Tu orden #{ventaActiva.id} ha sido procesada y pagada correctamente.</p>
+            <div style={{
+                maxWidth: '480px',
+                margin: '48px auto',
+                background: '#1e293b',
+                borderRadius: '24px',
+                padding: '32px',
+                border: '1px solid #334155',
+                textAlign: 'center',
+                boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px'
+            }}>
+                <CheckCircle2 style={{
+                    width: '64px',
+                    height: '64px',
+                    color: '#6ee7b7',
+                    margin: '0 auto',
+                    animation: 'bounce 1s ease-in-out infinite'
+                }} />
+                <div>
+                    <h2 style={{
+                        fontSize: '24px',
+                        fontWeight: '900',
+                        color: '#f1f5f9',
+                        margin: '0 0 4px 0'
+                    }}>
+                        ¡Pago Exitoso!
+                    </h2>
+                    <p style={{
+                        fontSize: '13px',
+                        color: '#94a3b8',
+                        margin: 0
+                    }}>
+                        Tu orden #{ventaActiva.id} ha sido procesada y pagada correctamente.
+                    </p>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-xl text-left text-xs text-gray-600 border border-gray-100 space-y-1">
-                    <div><span className="font-bold">Total Pagado:</span> ${ventaActiva.total.toFixed(2)} MXN</div>
-                    <div><span className="font-bold">Estado:</span> <span className="text-green-600 font-bold">PAGADO</span></div>
-                    <div><span className="font-bold">Cliente:</span> {ventaActiva.cliente?.nombre || 'Demo'}</div>
+                <div style={{
+                    background: '#0f172a',
+                    padding: '16px',
+                    borderRadius: '14px',
+                    border: '1px solid #334155',
+                    textAlign: 'left',
+                    fontSize: '12px',
+                    color: '#94a3b8',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px'
+                }}>
+                    <div><span style={{ fontWeight: '700', color: '#f1f5f9' }}>Total Pagado:</span> ${ventaActiva.total.toFixed(2)} MXN</div>
+                    <div><span style={{ fontWeight: '700', color: '#f1f5f9' }}>Estado:</span> <span style={{ color: '#6ee7b7', fontWeight: '700' }}>PAGADO</span></div>
+                    <div><span style={{ fontWeight: '700', color: '#f1f5f9' }}>Cliente:</span> {ventaActiva.cliente?.nombre || 'Demo'}</div>
                 </div>
-                <div className="flex gap-3">
+                <div style={{ display: 'flex', gap: '12px' }}>
                     <button
                         onClick={() => setVistaActual('miscompras')}
-                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl text-sm font-bold shadow-sm transition-colors cursor-pointer"
+                        style={{
+                            flex: 1,
+                            background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                            color: '#ffffff',
+                            padding: '14px',
+                            borderRadius: '14px',
+                            border: 'none',
+                            fontWeight: '700',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.4)',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 16px 30px -8px rgba(79, 70, 229, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(79, 70, 229, 0.4)';
+                        }}
                     >
                         Ver Mis Compras
                     </button>
                     <button
                         onClick={() => setVistaActual('catalogo')}
-                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 rounded-xl text-sm font-bold transition-colors cursor-pointer"
+                        style={{
+                            flex: 1,
+                            background: '#1e293b',
+                            color: '#94a3b8',
+                            padding: '14px',
+                            borderRadius: '14px',
+                            border: '1px solid #334155',
+                            fontWeight: '700',
+                            fontSize: '13px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#2d3748';
+                            e.currentTarget.style.color = '#f1f5f9';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = '#1e293b';
+                            e.currentTarget.style.color = '#94a3b8';
+                        }}
                     >
                         Seguir Comprando
                     </button>
@@ -206,27 +636,85 @@ export const CheckoutForm = ({ ventaActiva, setVistaActual }) => {
     }
 
     return (
-        <div className="max-w-md mx-auto my-12 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-            <div className="bg-gradient-to-r from-indigo-800 to-indigo-900 px-6 py-6 text-white text-center">
-                <h2 className="text-xl font-bold">Checkout de Venta</h2>
-                <p className="text-indigo-200 mt-1 text-xs">Completa tu pago seguro para la orden #{ventaActiva.id}</p>
+        <div style={{
+            maxWidth: '480px',
+            margin: '48px auto',
+            background: '#1e293b',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            border: '1px solid #334155',
+            boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.3)'
+        }}>
+            <div style={{
+                background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+                padding: '24px 28px',
+                textAlign: 'center',
+                borderBottom: '1px solid rgba(99, 102, 241, 0.2)'
+            }}>
+                <h2 style={{
+                    fontSize: '20px',
+                    fontWeight: '900',
+                    color: '#ffffff',
+                    margin: 0
+                }}>
+                    Checkout de Venta
+                </h2>
+                <p style={{
+                    color: '#a5b4fc',
+                    margin: '4px 0 0 0',
+                    fontSize: '12px',
+                    fontWeight: '500'
+                }}>
+                    Completa tu pago seguro para la orden #{ventaActiva.id}
+                </p>
             </div>
 
-            <div className="p-6 space-y-6">
-                <div className="space-y-3">
-                    <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wider">Resumen del Pedido</h3>
-                    <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 text-sm space-y-2">
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <h3 style={{
+                        fontSize: '12px',
+                        fontWeight: '800',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        margin: 0
+                    }}>
+                        Resumen del Pedido
+                    </h3>
+                    <div style={{
+                        background: 'rgba(79, 70, 229, 0.08)',
+                        padding: '16px',
+                        borderRadius: '14px',
+                        border: '1px solid rgba(79, 70, 229, 0.15)',
+                        fontSize: '13px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px'
+                    }}>
                         {ventaActiva.detalles && ventaActiva.detalles.map((det, idx) => (
-                            <div key={idx} className="flex justify-between text-gray-700 text-xs">
+                            <div key={idx} style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                color: '#94a3b8',
+                                fontSize: '12px'
+                            }}>
                                 <span>
                                     {det.producto?.nombre || `Producto #${det.producto?.id}`} (x{det.cantidad})
                                 </span>
-                                <span className="font-bold text-gray-800">${(det.precioUnitario * det.cantidad).toFixed(2)}</span>
+                                <span style={{ fontWeight: '700', color: '#f1f5f9' }}>${(det.precioUnitario * det.cantidad).toFixed(2)}</span>
                             </div>
                         ))}
-                        <div className="border-t border-indigo-200 pt-2 flex justify-between font-extrabold text-indigo-950 text-sm">
+                        <div style={{
+                            borderTop: '1px solid rgba(79, 70, 229, 0.2)',
+                            paddingTop: '10px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            fontWeight: '900',
+                            color: '#f1f5f9',
+                            fontSize: '14px'
+                        }}>
                             <span>Total a Cobrar</span>
-                            <span>${ventaActiva.total.toFixed(2)} MXN</span>
+                            <span style={{ color: '#818cf8' }}>${ventaActiva.total.toFixed(2)} MXN</span>
                         </div>
                     </div>
                 </div>

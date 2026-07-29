@@ -6,7 +6,9 @@ import {
     Truck, 
     ShoppingBag, 
     LogOut,
-    ShieldCheck
+    Store,
+    ShieldCheck,
+    Sparkles
 } from 'lucide-react';
 
 const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
@@ -19,21 +21,85 @@ const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
     ];
 
     return (
-        <aside className="w-72 bg-slate-950 text-slate-300 flex flex-col h-screen sticky top-0 shadow-2xl border-r border-slate-800/80 font-sans z-30">
+        <aside style={{
+            width: '280px',
+            background: 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)',
+            color: '#e2e8f0',
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100vh',
+            position: 'sticky',
+            top: 0,
+            boxShadow: '4px 0 30px rgba(0, 0, 0, 0.5)',
+            borderRight: '1px solid rgba(51, 65, 85, 0.5)',
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+            userSelect: 'none',
+            zIndex: 30,
+            overflow: 'hidden'
+        }}>
             
             {/* ENCABEZADO / LOGO */}
-            <div className="p-6 border-b border-slate-800/80 bg-slate-900/40 backdrop-blur-md">
-                <div className="flex items-center gap-3.5">
-                    <div className="w-11 h-11 bg-gradient-to-tr from-indigo-600 to-violet-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/30 ring-4 ring-indigo-500/10 shrink-0">
-                        <Package className="w-5 h-5 text-white" />
+            <div style={{
+                padding: '24px',
+                borderBottom: '1px solid rgba(51, 65, 85, 0.5)',
+                background: 'rgba(15, 23, 42, 0.6)',
+                backdropFilter: 'blur(8px)'
+            }}>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '14px'
+                }}>
+                    <div style={{
+                        width: '44px',
+                        height: '44px',
+                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                        color: 'white',
+                        borderRadius: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 8px 16px -4px rgba(79, 70, 229, 0.4)',
+                        flexShrink: 0
+                    }}>
+                        <Store style={{ width: '22px', height: '22px', color: 'white' }} />
                     </div>
-                    <div className="min-w-0">
-                        <h1 className="text-base font-black tracking-tight truncate" style={{ color: '#ffffff' }}>
-                            Mercadito<span className="text-indigo-400">Libre</span>
+                    <div style={{ minWidth: 0 }}>
+                        <h1 style={{
+                            fontSize: '16px',
+                            fontWeight: '900',
+                            letterSpacing: '-0.02em',
+                            color: '#ffffff',
+                            margin: 0,
+                            lineHeight: '1.2',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                        }}>
+                            Mercadito<span style={{ color: '#818cf8' }}>Libre</span>
                         </h1>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                            <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#94a3b8' }}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            marginTop: '4px'
+                        }}>
+                            <span style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                background: '#10b981',
+                                display: 'inline-block',
+                                animation: 'pulse 2s ease-in-out infinite'
+                            }} />
+                            <p style={{
+                                fontSize: '10px',
+                                fontWeight: '800',
+                                textTransform: 'uppercase',
+                                letterSpacing: '1px',
+                                color: '#94a3b8',
+                                margin: 0
+                            }}>
                                 Panel Admin
                             </p>
                         </div>
@@ -42,8 +108,23 @@ const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
             </div>
 
             {/* MENÚ DE NAVEGACIÓN */}
-            <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-                <p className="text-[10px] font-black uppercase tracking-widest px-3 py-2" style={{ color: '#64748b' }}>
+            <nav style={{
+                flex: 1,
+                padding: '16px',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px'
+            }}>
+                <p style={{
+                    fontSize: '9px',
+                    fontWeight: '800',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1.5px',
+                    color: '#64748b',
+                    padding: '8px 12px',
+                    margin: '0 0 4px 0'
+                }}>
                     Menú Principal
                 </p>
                 
@@ -55,42 +136,160 @@ const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
                         <button
                             key={item.id}
                             onClick={() => setSeccionActual(item.id)}
-                            style={isActive ? { backgroundColor: '#4f46e5', color: '#ffffff' } : {}}
-                            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-200 text-xs font-black uppercase tracking-wider group ${
-                                isActive
-                                    ? 'shadow-lg shadow-indigo-600/30 ring-2 ring-indigo-400/20'
-                                    : 'text-slate-400 hover:bg-slate-900 hover:text-white border border-transparent hover:border-slate-800'
-                            }`}
+                            style={{
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: '12px 16px',
+                                borderRadius: '14px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                fontSize: '12px',
+                                fontWeight: '800',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                background: isActive ? '#4f46e5' : 'transparent',
+                                color: isActive ? '#ffffff' : '#94a3b8',
+                                boxShadow: isActive ? '0 8px 16px -4px rgba(79, 70, 229, 0.4)' : 'none',
+                                position: 'relative'
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!isActive) {
+                                    e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
+                                    e.currentTarget.style.color = '#f1f5f9';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isActive) {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.color = '#94a3b8';
+                                }
+                            }}
                         >
-                            <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
-                                    isActive ? 'bg-white/10 text-white' : 'bg-slate-900 text-slate-400 group-hover:text-indigo-400 group-hover:bg-slate-800'
-                                }`}>
-                                    <Icon className="w-4 h-4" />
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px'
+                            }}>
+                                <div style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '10px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s ease',
+                                    background: isActive ? 'rgba(255, 255, 255, 0.15)' : 'rgba(51, 65, 85, 0.3)',
+                                    color: isActive ? '#ffffff' : '#94a3b8'
+                                }}>
+                                    <Icon style={{ width: '16px', height: '16px' }} />
                                 </div>
-                                <span style={isActive ? { color: '#ffffff' } : {}}>{item.label}</span>
+                                <span style={{ color: isActive ? '#ffffff' : '#94a3b8' }}>
+                                    {item.label}
+                                </span>
                             </div>
+                            {isActive && (
+                                <span style={{
+                                    width: '4px',
+                                    height: '24px',
+                                    borderRadius: '2px',
+                                    background: '#818cf8',
+                                    display: 'block'
+                                }} />
+                            )}
                         </button>
                     );
                 })}
             </nav>
 
             {/* ZONA INFERIOR / CIERRE DE SESIÓN */}
-            <div className="p-4 border-t border-slate-800/80 bg-slate-900/30">
+            <div style={{
+                padding: '16px',
+                borderTop: '1px solid rgba(51, 65, 85, 0.5)',
+                background: 'rgba(15, 23, 42, 0.4)'
+            }}>
                 <button 
                     onClick={onLogout}
-                    style={{ backgroundColor: '#7f1d1d', borderColor: '#991b1b', color: '#fca5a5' }}
-                    className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-xs font-black uppercase tracking-wider hover:bg-rose-900 hover:text-white transition-all duration-200 border shadow-sm active:scale-95 group"
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '14px 16px',
+                        borderRadius: '14px',
+                        border: '1px solid rgba(153, 27, 27, 0.5)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        fontSize: '11px',
+                        fontWeight: '800',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        background: 'rgba(127, 29, 29, 0.2)',
+                        color: '#fca5a5'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(153, 27, 27, 0.4)';
+                        e.currentTarget.style.borderColor = 'rgba(153, 27, 27, 0.8)';
+                        e.currentTarget.style.color = '#ffffff';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(127, 29, 29, 0.2)';
+                        e.currentTarget.style.borderColor = 'rgba(153, 27, 27, 0.5)';
+                        e.currentTarget.style.color = '#fca5a5';
+                    }}
                 >
-                    <div className="w-8 h-8 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0 group-hover:bg-rose-500/30 transition-colors">
-                        <LogOut className="w-4 h-4 text-rose-300" />
+                    <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '10px',
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        transition: 'all 0.2s ease'
+                    }}>
+                        <LogOut style={{ width: '16px', height: '16px', color: '#fca5a5' }} />
                     </div>
-                    <span style={{ color: '#fca5a5' }} className="group-hover:text-white transition-colors">
+                    <span style={{ color: '#fca5a5' }}>
                         Cerrar Sesión
                     </span>
                 </button>
+
+                {/* Badge de versión */}
+                <div style={{
+                    marginTop: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '8px',
+                    borderRadius: '10px',
+                    background: 'rgba(51, 65, 85, 0.2)'
+                }}>
+                    <Sparkles style={{ width: '12px', height: '12px', color: '#64748b' }} />
+                    <span style={{
+                        fontSize: '9px',
+                        fontWeight: '700',
+                        color: '#64748b',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px'
+                    }}>
+                        v2.4 • Seguro
+                    </span>
+                    <ShieldCheck style={{ width: '12px', height: '12px', color: '#10b981' }} />
+                </div>
             </div>
-            
+
+            {/* Animación de pulso */}
+            <style>{`
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.5; transform: scale(0.85); }
+                }
+            `}</style>
         </aside>
     );
 };

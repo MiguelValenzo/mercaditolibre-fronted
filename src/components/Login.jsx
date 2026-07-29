@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { apiService } from '../services/apiService';
-import { Mail, Lock, Eye, EyeOff, LogIn, AlertCircle, CheckCircle, ShieldCheck, ArrowRight, UserPlus } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, LogIn, AlertCircle, CheckCircle, ShieldCheck, ArrowRight, UserPlus, Sparkles, Store, User } from 'lucide-react';
 
 const Login = ({ onLoginSuccess, onGoToRegister }) => {
     const [email, setEmail] = useState('');
@@ -39,17 +39,18 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
             justifyContent: 'center',
             padding: '24px',
             boxSizing: 'border-box',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+            background: '#0f172a'
         }}>
             
-            {/* Tarjeta Principal */}
+            {/* Tarjeta Principal - Modo Oscuro */}
             <div style={{
                 width: '100%',
-                maxWidth: '900px',
-                backgroundColor: '#ffffff',
-                borderRadius: '24px',
-                boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.05)',
-                border: '1px solid #e2e8f0',
+                maxWidth: '920px',
+                backgroundColor: '#1e293b',
+                borderRadius: '28px',
+                boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.5)',
+                border: '1px solid rgba(51, 65, 85, 0.5)',
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'row',
@@ -58,10 +59,10 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                 
                 {/* Lado Izquierdo - Ilustración & Marca */}
                 <div style={{
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%)',
+                    background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
                     color: '#ffffff',
-                    padding: '40px 32px',
-                    width: '40%',
+                    padding: '44px 36px',
+                    width: '42%',
                     minWidth: '280px',
                     boxSizing: 'border-box',
                     display: 'flex',
@@ -70,16 +71,26 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                     position: 'relative',
                     overflow: 'hidden'
                 }}>
-                    {/* Círculos de luz decorativos */}
+                    {/* Elementos decorativos */}
                     <div style={{
                         position: 'absolute',
-                        top: '-50px',
-                        left: '-50px',
+                        top: '-60px',
+                        right: '-60px',
                         width: '200px',
                         height: '200px',
                         borderRadius: '50%',
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        filter: 'blur(30px)',
+                        background: 'radial-gradient(circle, rgba(99,102,241,0.3) 0%, rgba(255,255,255,0) 70%)',
+                        pointerEvents: 'none'
+                    }} />
+
+                    <div style={{
+                        position: 'absolute',
+                        bottom: '-80px',
+                        left: '-80px',
+                        width: '250px',
+                        height: '250px',
+                        borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(255,255,255,0) 70%)',
                         pointerEvents: 'none'
                     }} />
 
@@ -88,36 +99,58 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                            background: 'rgba(255, 255, 255, 0.12)',
                             backdropFilter: 'blur(8px)',
                             color: '#ffffff',
                             padding: '6px 14px',
                             borderRadius: '30px',
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            marginBottom: '28px',
-                            border: '1px solid rgba(255, 255, 255, 0.3)'
+                            fontSize: '10px',
+                            fontWeight: '800',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px',
+                            marginBottom: '32px',
+                            border: '1px solid rgba(255, 255, 255, 0.15)'
                         }}>
-                            <ShieldCheck size={16} color="#ffffff" />
+                            <ShieldCheck style={{ width: '14px', height: '14px' }} />
                             <span>Acceso Seguro SSL</span>
                         </div>
                         
-                        <h2 style={{
-                            fontSize: '28px',
-                            fontWeight: '800',
-                            color: '#ffffff',
-                            margin: '0 0 12px 0',
-                            lineHeight: '1.2',
-                            letterSpacing: '-0.02em'
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '14px',
+                            marginBottom: '12px'
                         }}>
-                            MercaditoLibre
-                        </h2>
+                            <div style={{
+                                width: '48px',
+                                height: '48px',
+                                background: 'rgba(255, 255, 255, 0.15)',
+                                borderRadius: '14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                border: '1px solid rgba(255, 255, 255, 0.2)'
+                            }}>
+                                <Store style={{ width: '28px', height: '28px', color: 'white' }} />
+                            </div>
+                            <h2 style={{
+                                fontSize: '26px',
+                                fontWeight: '900',
+                                color: '#ffffff',
+                                margin: 0,
+                                lineHeight: '1.2',
+                                letterSpacing: '-0.02em'
+                            }}>
+                                MercaditoLibre
+                            </h2>
+                        </div>
                         
                         <p style={{
                             fontSize: '14px',
-                            color: '#dbeafe',
+                            color: '#c7d2fe',
                             margin: 0,
-                            lineHeight: '1.6'
+                            lineHeight: '1.6',
+                            maxWidth: '280px'
                         }}>
                             Gestiona tus pedidos, explora el catálogo completo y sincroniza tus compras en un solo lugar.
                         </p>
@@ -127,29 +160,48 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '10px',
-                            padding: '12px',
+                            gap: '12px',
+                            padding: '14px 16px',
                             borderRadius: '16px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                            backdropFilter: 'blur(8px)'
+                            background: 'rgba(255, 255, 255, 0.08)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)'
                         }}>
-                            <LogIn size={20} color="#ffffff" />
+                            <div style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '10px',
+                                background: 'rgba(255, 255, 255, 0.15)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                <User style={{ width: '18px', height: '18px', color: '#c7d2fe' }} />
+                            </div>
                             <div>
                                 <p style={{ fontSize: '12px', fontWeight: '700', color: '#ffffff', margin: 0 }}>Portal Clientes</p>
-                                <p style={{ fontSize: '11px', color: '#bfdbfe', margin: 0 }}>v2.4 Autenticación</p>
+                                <p style={{ fontSize: '10px', color: '#a5b4fc', margin: 0, fontWeight: '500' }}>v2.4 Autenticación</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Watermark de fondo */}
-                    <LogIn size={260} color="#ffffff" style={{ position: 'absolute', right: '-60px', bottom: '-60px', opacity: 0.08, pointerEvents: 'none' }} />
+                    {/* Icono de fondo decorativo */}
+                    <LogIn style={{ 
+                        position: 'absolute', 
+                        right: '-40px', 
+                        bottom: '-40px', 
+                        width: '200px', 
+                        height: '200px', 
+                        opacity: 0.06, 
+                        pointerEvents: 'none' 
+                    }} />
                 </div>
 
-                {/* Lado Derecho - Formulario */}
+                {/* Lado Derecho - Formulario - Modo Oscuro */}
                 <div style={{
-                    backgroundColor: '#ffffff',
-                    padding: '40px 36px',
-                    width: '60%',
+                    backgroundColor: '#1e293b',
+                    padding: '44px 40px',
+                    width: '58%',
                     flex: '1',
                     boxSizing: 'border-box',
                     display: 'flex',
@@ -158,71 +210,109 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                 }}>
                     
                     <div style={{ marginBottom: '28px' }}>
-                        <h3 style={{
-                            fontSize: '22px',
-                            fontWeight: '800',
-                            color: '#0f172a',
-                            margin: '0 0 6px 0',
-                            letterSpacing: '-0.01em'
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            marginBottom: '4px'
                         }}>
-                            ¡Hola de nuevo!
-                        </h3>
-                        <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
+                            <Sparkles style={{ width: '18px', height: '18px', color: '#818cf8' }} />
+                            <h3 style={{
+                                fontSize: '22px',
+                                fontWeight: '800',
+                                color: '#f1f5f9',
+                                margin: 0,
+                                letterSpacing: '-0.01em'
+                            }}>
+                                ¡Hola de nuevo!
+                            </h3>
+                        </div>
+                        <p style={{ fontSize: '13px', color: '#94a3b8', margin: '4px 0 0 26px' }}>
                             Ingresa con tus credenciales de correo electrónico.
                         </p>
                     </div>
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                         
-                        {/* Banner de Error */}
+                        {/* Banner de Error - Modo Oscuro */}
                         {error && (
                             <div style={{
-                                backgroundColor: '#fef2f2',
-                                border: '1px solid #fee2e2',
-                                color: '#991b1b',
-                                padding: '12px 16px',
-                                borderRadius: '12px',
-                                fontSize: '13px',
+                                background: 'rgba(239, 68, 68, 0.15)',
+                                border: '1px solid #7f1d1d',
+                                padding: '14px 18px',
+                                borderRadius: '14px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px'
+                                gap: '12px',
+                                color: '#fca5a5',
+                                fontSize: '13px',
+                                fontWeight: '600'
                             }}>
-                                <AlertCircle size={18} color="#ef4444" style={{ flexShrink: 0 }} />
-                                <span style={{ color: '#991b1b', fontWeight: '500' }}>{error}</span>
+                                <div style={{
+                                    background: '#ef4444',
+                                    color: 'white',
+                                    padding: '6px',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    flexShrink: 0
+                                }}>
+                                    <AlertCircle style={{ width: '16px', height: '16px' }} />
+                                </div>
+                                <span>{error}</span>
                             </div>
                         )}
 
-                        {/* Banner de Éxito */}
+                        {/* Banner de Éxito - Modo Oscuro */}
                         {success && (
                             <div style={{
-                                backgroundColor: '#f0fdf4',
-                                border: '1px solid #dcfce7',
-                                color: '#166534',
-                                padding: '12px 16px',
-                                borderRadius: '12px',
-                                fontSize: '13px',
+                                background: 'rgba(16, 185, 129, 0.15)',
+                                border: '1px solid #065f46',
+                                padding: '14px 18px',
+                                borderRadius: '14px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px'
+                                gap: '12px',
+                                color: '#6ee7b7',
+                                fontSize: '13px',
+                                fontWeight: '600'
                             }}>
-                                <CheckCircle size={18} color="#22c55e" style={{ flexShrink: 0 }} />
-                                <span style={{ color: '#166534', fontWeight: '500' }}>{success}</span>
+                                <div style={{
+                                    background: '#10b981',
+                                    color: 'white',
+                                    padding: '6px',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    flexShrink: 0
+                                }}>
+                                    <CheckCircle style={{ width: '16px', height: '16px' }} />
+                                </div>
+                                <span>{success}</span>
                             </div>
                         )}
 
-                        {/* Campo Correo */}
+                        {/* Campo Correo - Modo Oscuro */}
                         <div>
                             <label style={{
                                 display: 'block',
-                                fontSize: '12px',
+                                fontSize: '11px',
                                 fontWeight: '700',
-                                color: '#334155',
-                                marginBottom: '6px'
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                color: '#94a3b8',
+                                marginBottom: '8px'
                             }}>
                                 Correo Electrónico
                             </label>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <Mail size={18} color="#94a3b8" style={{ position: 'absolute', left: '14px', pointerEvents: 'none', zIndex: 1 }} />
+                                <span style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    color: '#818cf8',
+                                    display: 'flex',
+                                    pointerEvents: 'none'
+                                }}>
+                                    <Mail style={{ width: '18px', height: '18px' }} />
+                                </span>
                                 <input
                                     type="email"
                                     value={email}
@@ -231,33 +321,54 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                                     required
                                     style={{
                                         width: '100%',
-                                        padding: '12px 14px 12px 42px',
-                                        borderRadius: '12px',
-                                        border: '1.5px solid #cbd5e1',
-                                        backgroundColor: '#f8fafc',
-                                        color: '#0f172a',
+                                        padding: '14px 18px 14px 48px',
+                                        borderRadius: '14px',
+                                        border: '1.5px solid #334155',
+                                        background: 'rgba(51, 65, 85, 0.3)',
                                         fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: '#f1f5f9',
                                         outline: 'none',
                                         boxSizing: 'border-box',
                                         transition: 'all 0.2s ease'
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = '#6366f1';
+                                        e.target.style.background = 'rgba(51, 65, 85, 0.5)';
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.15)';
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = '#334155';
+                                        e.target.style.background = 'rgba(51, 65, 85, 0.3)';
+                                        e.target.style.boxShadow = 'none';
                                     }}
                                 />
                             </div>
                         </div>
 
-                        {/* Campo Contraseña */}
+                        {/* Campo Contraseña - Modo Oscuro */}
                         <div>
                             <label style={{
                                 display: 'block',
-                                fontSize: '12px',
+                                fontSize: '11px',
                                 fontWeight: '700',
-                                color: '#334155',
-                                marginBottom: '6px'
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                color: '#94a3b8',
+                                marginBottom: '8px'
                             }}>
                                 Contraseña
                             </label>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <Lock size={18} color="#94a3b8" style={{ position: 'absolute', left: '14px', pointerEvents: 'none', zIndex: 1 }} />
+                                <span style={{
+                                    position: 'absolute',
+                                    left: '16px',
+                                    color: '#818cf8',
+                                    display: 'flex',
+                                    pointerEvents: 'none'
+                                }}>
+                                    <Lock style={{ width: '18px', height: '18px' }} />
+                                </span>
                                 <input
                                     type={mostrarPassword ? 'text' : 'password'}
                                     value={password}
@@ -266,15 +377,26 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                                     required
                                     style={{
                                         width: '100%',
-                                        padding: '12px 42px 12px 42px',
-                                        borderRadius: '12px',
-                                        border: '1.5px solid #cbd5e1',
-                                        backgroundColor: '#f8fafc',
-                                        color: '#0f172a',
+                                        padding: '14px 48px 14px 48px',
+                                        borderRadius: '14px',
+                                        border: '1.5px solid #334155',
+                                        background: 'rgba(51, 65, 85, 0.3)',
                                         fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: '#f1f5f9',
                                         outline: 'none',
                                         boxSizing: 'border-box',
                                         transition: 'all 0.2s ease'
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = '#6366f1';
+                                        e.target.style.background = 'rgba(51, 65, 85, 0.5)';
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.15)';
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = '#334155';
+                                        e.target.style.background = 'rgba(51, 65, 85, 0.3)';
+                                        e.target.style.boxShadow = 'none';
                                     }}
                                 />
                                 <button
@@ -282,18 +404,24 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                                     onClick={() => setMostrarPassword(!mostrarPassword)}
                                     style={{
                                         position: 'absolute',
-                                        right: '12px',
+                                        right: '14px',
                                         background: 'none',
                                         border: 'none',
                                         cursor: 'pointer',
                                         padding: '4px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        color: '#64748b',
-                                        borderRadius: '6px'
+                                        color: '#94a3b8',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.2s ease'
                                     }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
                                 >
-                                    {mostrarPassword ? <EyeOff size={18} color="#64748b" /> : <Eye size={18} color="#64748b" />}
+                                    {mostrarPassword ? 
+                                        <EyeOff style={{ width: '18px', height: '18px' }} /> : 
+                                        <Eye style={{ width: '18px', height: '18px' }} />
+                                    }
                                 </button>
                             </div>
                         </div>
@@ -304,69 +432,112 @@ const Login = ({ onLoginSuccess, onGoToRegister }) => {
                             disabled={loading}
                             style={{
                                 width: '100%',
-                                marginTop: '10px',
-                                padding: '14px 20px',
-                                borderRadius: '12px',
+                                marginTop: '8px',
+                                padding: '15px 20px',
+                                borderRadius: '14px',
                                 border: 'none',
-                                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                                background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
                                 color: '#ffffff',
-                                fontSize: '14px',
+                                fontSize: '13px',
                                 fontWeight: '700',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
                                 cursor: loading ? 'not-allowed' : 'pointer',
                                 opacity: loading ? 0.7 : 1,
-                                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)',
+                                boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.4)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyCenter: 'center',
-                                gap: '8px',
+                                justifyContent: 'center',
+                                gap: '10px',
                                 transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!loading) {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 16px 30px -8px rgba(79, 70, 229, 0.5)';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!loading) {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(79, 70, 229, 0.4)';
+                                }
                             }}
                         >
                             {loading ? (
-                                <span style={{ color: '#ffffff' }}>Iniciando sesión...</span>
+                                <>
+                                    <span style={{ 
+                                        display: 'inline-block',
+                                        width: '18px',
+                                        height: '18px',
+                                        border: '2px solid rgba(255,255,255,0.3)',
+                                        borderTop: '2px solid #ffffff',
+                                        borderRadius: '50%',
+                                        animation: 'spin 0.8s linear infinite'
+                                    }} />
+                                    <span>Iniciando sesión...</span>
+                                </>
                             ) : (
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%' }}>
-                                    <span style={{ color: '#ffffff' }}>Iniciar Sesión</span>
-                                    <ArrowRight size={18} color="#ffffff" />
-                                </div>
+                                <>
+                                    <span>Iniciar Sesión</span>
+                                    <ArrowRight style={{ width: '18px', height: '18px' }} />
+                                </>
                             )}
                         </button>
                     </form>
 
-                    {/* Separador y Link de Registro */}
+                    {/* Separador y Link de Registro - Modo Oscuro */}
                     <div style={{
                         marginTop: '28px',
-                        paddingTop: '20px',
-                        borderTop: '1px solid #f1f5f9',
+                        paddingTop: '24px',
+                        borderTop: '1px solid rgba(51, 65, 85, 0.4)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '6px'
+                        gap: '8px',
+                        flexWrap: 'wrap'
                     }}>
-                        <span style={{ fontSize: '13px', color: '#64748b' }}>¿No tienes una cuenta?</span>
+                        <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: '500' }}>
+                            ¿No tienes una cuenta?
+                        </span>
                         <button
                             onClick={onGoToRegister}
                             style={{
                                 background: 'none',
                                 border: 'none',
-                                color: '#2563eb',
+                                color: '#818cf8',
                                 fontWeight: '700',
                                 cursor: 'pointer',
                                 fontSize: '13px',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: '4px',
-                                padding: '2px 6px',
-                                borderRadius: '6px'
+                                gap: '6px',
+                                padding: '6px 12px',
+                                borderRadius: '10px',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(79, 70, 229, 0.15)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'none';
                             }}
                         >
-                            <UserPlus size={15} color="#2563eb" />
+                            <UserPlus style={{ width: '16px', height: '16px' }} />
                             <span>Regístrate aquí</span>
                         </button>
                     </div>
 
                 </div>
             </div>
+
+            {/* Estilo de animación para el spinner */}
+            <style>{`
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 };

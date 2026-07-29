@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/apiService';
 import { 
     Search, ShoppingCart, Info, AlertTriangle, Zap, LogIn, 
-    CheckCircle2, PackageX, Sparkles, SlidersHorizontal, ArrowUpDown, X 
+    CheckCircle2, PackageX, Sparkles, SlidersHorizontal, ArrowUpDown, X,
+    Loader2
 } from 'lucide-react';
 
 export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
@@ -12,28 +13,34 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [selecionCategoria, setSelecionCategoria] = useState('Todos');
-    const [orden, setOrden] = useState('defecto'); // 'defecto', 'precio-asc', 'precio-desc', 'nombre'
+    const [orden, setOrden] = useState('defecto');
 
-    // ✅ Log para debug
-    console.log('👤 Usuario en Catalogo:', user);
-    console.log('👑 Rol del usuario:', user?.rol);
     const isClient = user && (user.rol === 'CLIENTE' || user.rol === 'ROLE_CLIENTE');
-    console.log('👤 isClient:', isClient);
 
     useEffect(() => {
         const cargaDatosCatalogo = async () => {
             setCarga(true);
             setError('');
             try {
-                console.log('Cargando productos...');
                 const datosProductos = await apiService.getProductos();
-                console.log('Productos recibidos:', datosProductos);
+                console.log('📦 Productos recibidos:', datosProductos);
                 setProductos(datosProductos || []);
 
-                console.log('Cargando categorías...');
                 const datosCategorias = await apiService.getCategorias();
-                console.log('Categorías recibidas:', datosCategorias);
-                setCategorias(datosCategorias || []);
+                console.log('📂 Categorías recibidas:', datosCategorias);
+                
+                // 🔥 ELIMINAR DUPLICADOS POR NOMBRE 🔥
+                const categoriasUnicas = [];
+                const nombresVistos = new Set();
+                
+                datosCategorias.forEach(cat => {
+                    if (cat && cat.nombre && !nombresVistos.has(cat.nombre)) {
+                        nombresVistos.add(cat.nombre);
+                        categoriasUnicas.push(cat);
+                    }
+                });
+                
+                setCategorias(categoriasUnicas || []);
             } catch (err) {
                 console.error('Error cargando catálogo:', err);
                 setError('Error en el servidor backend: ' + err.message);
@@ -59,43 +66,35 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
     };
 
     const handleComprarAhora = (producto) => {
-        console.log('⚡ handleComprarAhora llamado');
-        console.log('👤 Usuario:', user);
-        
         if (!user) {
-            console.log('❌ No hay usuario, redirigiendo a login');
             setVistaActual('login');
             return;
         }
-        
-        console.log('🔑 Rol del usuario:', user.rol);
-        
         if (!isClient) {
-            console.log('❌ Usuario no es CLIENTE, rol:', user.rol);
             alert('Solo los clientes pueden realizar compras.');
             return;
         }
-        
-        console.log('✅ Usuario es CLIENTE, comprando...');
         if (comprarAhora) {
             comprarAhora(producto);
         }
     };
 
-    // Filtrado de productos
+    // ✅ FILTRO CORREGIDO - Ahora verifica que categoria existe
     const productosFiltrados = productos.filter((producto) => {
+        // Buscar por nombre o descripción
         const busqueda =
             producto.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (producto.descripcion && producto.descripcion.toLowerCase().includes(searchQuery.toLowerCase()));
 
+        // ✅ Obtener nombre de categoría de forma segura
+        const categoriaNombre = producto.categoria?.nombre || '';
         const busquedaCategorias =
             selecionCategoria === 'Todos' ||
-            (producto.categoria && producto.categoria.nombre === selecionCategoria);
+            categoriaNombre === selecionCategoria;
 
         return busqueda && busquedaCategorias;
     });
 
-    // Ordenamiento de productos
     const productosOrdenados = [...productosFiltrados].sort((a, b) => {
         if (orden === 'precio-asc') return (a.precio || 0) - (b.precio || 0);
         if (orden === 'precio-desc') return (b.precio || 0) - (a.precio || 0);
@@ -117,20 +116,29 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 minHeight: '70vh',
-                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                background: '#0f172a'
             }}>
                 <div style={{
-                    width: '56px',
-                    height: '56px',
-                    border: '4px solid #e2e8f0',
-                    borderTop: '4px solid #2563eb',
-                    borderRadius: '50%',
-                    animation: 'spin 0.75s linear infinite'
-                }} />
-                <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-                <p style={{ color: '#334155', marginTop: '20px', fontWeight: '700', fontSize: '16px' }}>
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '24px',
+                    background: '#1e293b',
+                    border: '1px solid #334155',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#818cf8',
+                    boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.3)'
+                }}>
+                    <Loader2 style={{ width: '32px', height: '32px', animation: 'spin 1s linear infinite' }} />
+                </div>
+                <p style={{ color: '#94a3b8', marginTop: '20px', fontWeight: '700', fontSize: '16px' }}>
                     Sincronizando inventario...
                 </p>
+                <style>{`
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                `}</style>
             </div>
         );
     }
@@ -140,33 +148,46 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
             maxWidth: '1320px',
             margin: '0 auto',
             padding: '24px 20px 64px 20px',
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-            boxSizing: 'border-box'
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+            boxSizing: 'border-box',
+            background: '#0f172a',
+            minHeight: '100vh'
         }}>
             
-            {/* HERO BANNER PREMIUM */}
+            {/* HERO BANNER PREMIUM - MODO OSCURO */}
             <div style={{
-                background: 'radial-gradient(circle at 80% 20%, #1e40af 0%, #0f172a 60%, #020617 100%)',
+                background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
                 borderRadius: '28px',
                 padding: '40px 36px',
                 marginBottom: '32px',
                 color: '#ffffff',
-                boxShadow: '0 20px 40px -15px rgba(15, 23, 42, 0.4)',
+                boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.6)',
                 position: 'relative',
                 overflow: 'hidden',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
+                border: '1px solid rgba(99, 102, 241, 0.2)'
             }}>
+                <div style={{
+                    position: 'absolute',
+                    right: '-30px',
+                    top: '-30px',
+                    width: '200px',
+                    height: '200px',
+                    background: 'radial-gradient(circle, rgba(99,102,241,0.3) 0%, rgba(255,255,255,0) 70%)',
+                    borderRadius: '50%',
+                    pointerEvents: 'none'
+                }}></div>
+
                 <div style={{ position: 'relative', zIndex: 2, maxWidth: '680px' }}>
                     <div style={{
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '6px',
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        border: '1px solid rgba(147, 197, 253, 0.3)',
-                        color: '#93c5fd',
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                        border: '1px solid rgba(99, 102, 241, 0.3)',
+                        color: '#a5b4fc',
                         padding: '6px 14px',
                         borderRadius: '30px',
-                        fontSize: '12px',
+                        fontSize: '11px',
                         fontWeight: '700',
                         textTransform: 'uppercase',
                         letterSpacing: '0.06em',
@@ -180,15 +201,13 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                         margin: '0 0 12px 0',
                         letterSpacing: '-0.03em',
                         lineHeight: '1.15',
-                        background: 'linear-gradient(to right, #ffffff, #cbd5e1)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent'
+                        color: '#ffffff'
                     }}>
                         Descubre productos excepcionales
                     </h1>
                     <p style={{
                         margin: '0 0 28px 0',
-                        color: '#94a3b8',
+                        color: '#c7d2fe',
                         fontSize: '16px',
                         lineHeight: '1.6',
                         maxWidth: '540px'
@@ -196,17 +215,18 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                         Calidad garantizada en cada artículo, envíos seguros y la mejor atención a nuestros clientes.
                     </p>
 
-                    {/* Buscador Integrado */}
+                    {/* Buscador Integrado - Modo Oscuro */}
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        backgroundColor: '#ffffff',
+                        backgroundColor: '#1e293b',
                         borderRadius: '16px',
                         padding: '6px 8px 6px 18px',
-                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
-                        maxWidth: '540px'
+                        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                        maxWidth: '540px',
+                        border: '1px solid #334155'
                     }}>
-                        <Search size={20} color="#64748b" style={{ marginRight: '12px', flexShrink: 0 }} />
+                        <Search size={20} color="#94a3b8" style={{ marginRight: '12px', flexShrink: 0 }} />
                         <input
                             type="text"
                             value={searchQuery}
@@ -217,7 +237,7 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                 border: 'none',
                                 outline: 'none',
                                 fontSize: '15px',
-                                color: '#0f172a',
+                                color: '#f1f5f9',
                                 fontWeight: '500',
                                 backgroundColor: 'transparent'
                             }}
@@ -227,7 +247,7 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                 onClick={() => setSearchQuery('')}
                                 style={{
                                     border: 'none',
-                                    backgroundColor: '#f1f5f9',
+                                    backgroundColor: '#334155',
                                     borderRadius: '50%',
                                     width: '28px',
                                     height: '28px',
@@ -235,30 +255,32 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     cursor: 'pointer',
-                                    marginRight: '6px'
+                                    marginRight: '6px',
+                                    color: '#94a3b8'
                                 }}
                             >
-                                <X size={14} color="#64748b" />
+                                <X size={14} />
                             </button>
                         )}
                     </div>
                 </div>
 
-                <ShoppingCart size={280} color="#ffffff" style={{
+                <ShoppingCart size={280} style={{
                     position: 'absolute',
                     right: '-50px',
                     bottom: '-50px',
                     opacity: 0.05,
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    color: '#ffffff'
                 }} />
             </div>
 
-            {/* ALERTA DE ERROR */}
+            {/* ALERTA DE ERROR - Modo Oscuro */}
             {error && (
                 <div style={{
-                    backgroundColor: '#fef2f2',
-                    border: '1px solid #fecdd3',
-                    color: '#991b1b',
+                    backgroundColor: '#450a0a',
+                    border: '1px solid #7f1d1d',
+                    color: '#fca5a5',
                     padding: '16px 20px',
                     borderRadius: '16px',
                     fontSize: '14px',
@@ -268,21 +290,21 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                     gap: '12px',
                     boxShadow: '0 2px 8px rgba(239, 68, 68, 0.08)'
                 }}>
-                    <Info size={22} color="#dc2626" style={{ flexShrink: 0 }} />
+                    <Info size={22} color="#f87171" style={{ flexShrink: 0 }} />
                     <div style={{ flexGrow: 1 }}>
                         <strong style={{ fontWeight: '700' }}>Error de conexión:</strong> {error}
                     </div>
                 </div>
             )}
 
-            {/* BARRA DE HERRAMIENTAS: CATEGORÍAS Y ORDENAMIENTO */}
+            {/* BARRA DE HERRAMIENTAS - Modo Oscuro */}
             <div style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: '#1e293b',
                 borderRadius: '20px',
                 padding: '16px 20px',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #334155',
                 marginBottom: '28px',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
@@ -296,12 +318,13 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                     gap: '8px',
                     overflowX: 'auto',
                     maxWidth: '100%',
-                    paddingBottom: '4px'
+                    paddingBottom: '4px',
+                    flexWrap: 'wrap'
                 }}>
                     <span style={{
                         fontSize: '13px',
                         fontWeight: '800',
-                        color: '#64748b',
+                        color: '#94a3b8',
                         textTransform: 'uppercase',
                         letterSpacing: '0.05em',
                         marginRight: '8px',
@@ -320,9 +343,9 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                             borderRadius: '12px',
                             fontSize: '13px',
                             fontWeight: selecionCategoria === 'Todos' ? '700' : '600',
-                            color: selecionCategoria === 'Todos' ? '#ffffff' : '#475569',
-                            backgroundColor: selecionCategoria === 'Todos' ? '#2563eb' : '#f8fafc',
-                            border: selecionCategoria === 'Todos' ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                            color: selecionCategoria === 'Todos' ? '#ffffff' : '#94a3b8',
+                            backgroundColor: selecionCategoria === 'Todos' ? '#4f46e5' : '#0f172a',
+                            border: selecionCategoria === 'Todos' ? '1px solid #4f46e5' : '1px solid #334155',
                             cursor: 'pointer',
                             whiteSpace: 'nowrap',
                             transition: 'all 0.2s ease'
@@ -331,20 +354,24 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                         Todas ({productos.length})
                     </button>
 
+                    {/* 🔥 CATEGORÍAS ÚNICAS - CON VERIFICACIÓN DE SEGURIDAD */}
                     {categorias.map((cat) => {
+                        // ✅ Verificar que la categoría existe y tiene nombre
+                        if (!cat || !cat.nombre) return null;
+                        
                         const active = selecionCategoria === cat.nombre;
                         return (
                             <button
-                                key={cat.id}
+                                key={cat.id || cat.nombre}
                                 onClick={() => setSelecionCategoria(cat.nombre)}
                                 style={{
                                     padding: '8px 18px',
                                     borderRadius: '12px',
                                     fontSize: '13px',
                                     fontWeight: active ? '700' : '600',
-                                    color: active ? '#ffffff' : '#475569',
-                                    backgroundColor: active ? '#2563eb' : '#f8fafc',
-                                    border: active ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                                    color: active ? '#ffffff' : '#94a3b8',
+                                    backgroundColor: active ? '#4f46e5' : '#0f172a',
+                                    border: active ? '1px solid #4f46e5' : '1px solid #334155',
                                     cursor: 'pointer',
                                     whiteSpace: 'nowrap',
                                     transition: 'all 0.2s ease'
@@ -357,19 +384,19 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                 </div>
 
                 {/* Ordenamiento */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <ArrowUpDown size={15} color="#64748b" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <ArrowUpDown size={15} color="#94a3b8" />
                     <select
                         value={orden}
                         onChange={(e) => setOrden(e.target.value)}
                         style={{
                             padding: '8px 14px',
                             borderRadius: '12px',
-                            border: '1px solid #cbd5e1',
+                            border: '1px solid #334155',
                             fontSize: '13px',
                             fontWeight: '600',
-                            color: '#334155',
-                            backgroundColor: '#ffffff',
+                            color: '#f1f5f9',
+                            backgroundColor: '#0f172a',
                             outline: 'none',
                             cursor: 'pointer'
                         }}
@@ -387,9 +414,9 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                             style={{
                                 padding: '8px 12px',
                                 borderRadius: '12px',
-                                border: '1px solid #fca5a5',
-                                backgroundColor: '#fef2f2',
-                                color: '#ef4444',
+                                border: '1px solid #7f1d1d',
+                                backgroundColor: '#450a0a',
+                                color: '#fca5a5',
                                 fontSize: '12px',
                                 fontWeight: '700',
                                 cursor: 'pointer',
@@ -404,7 +431,7 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                 </div>
             </div>
 
-            {/* METRICAS DE RESULTADOS */}
+            {/* METRICAS DE RESULTADOS - Modo Oscuro */}
             <div style={{
                 marginBottom: '20px',
                 display: 'flex',
@@ -412,50 +439,52 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                 alignItems: 'center',
                 padding: '0 4px'
             }}>
-                <span style={{ fontSize: '14px', color: '#64748b', fontWeight: '600' }}>
-                    Mostrando <strong style={{ color: '#0f172a' }}>{productosOrdenados.length}</strong> productos
+                <span style={{ fontSize: '14px', color: '#94a3b8', fontWeight: '600' }}>
+                    Mostrando <strong style={{ color: '#f1f5f9' }}>{productosOrdenados.length}</strong> productos
                 </span>
             </div>
 
-            {/* GRID DE PRODUCTOS */}
+            {/* GRID DE PRODUCTOS - Modo Oscuro */}
             {productosOrdenados.length === 0 ? (
                 <div style={{
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#1e293b',
                     borderRadius: '24px',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid #334155',
                     padding: '70px 24px',
                     textAlign: 'center',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
                 }}>
                     <div style={{
                         width: '72px',
                         height: '72px',
-                        backgroundColor: '#f1f5f9',
+                        backgroundColor: '#0f172a',
                         borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        margin: '0 auto 16px auto'
+                        margin: '0 auto 16px auto',
+                        border: '1px solid #334155'
                     }}>
-                        <AlertTriangle size={36} color="#94a3b8" />
+                        <AlertTriangle size={36} color="#64748b" />
                     </div>
-                    <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#0f172a', margin: '0 0 8px 0' }}>
+                    <h3 style={{ fontSize: '20px', fontWeight: '800', color: '#f1f5f9', margin: '0 0 8px 0' }}>
                         Sin resultados coincidentes
                     </h3>
-                    <p style={{ fontSize: '14px', color: '#64748b', margin: '0 0 20px 0', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
+                    <p style={{ fontSize: '14px', color: '#94a3b8', margin: '0 0 20px 0', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
                         No encontramos ningún producto que cumpla con los criterios de búsqueda o categoría seleccionada.
                     </p>
                     <button
                         onClick={limpiarFiltros}
                         style={{
                             padding: '10px 24px',
-                            backgroundColor: '#2563eb',
+                            background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
                             color: '#ffffff',
                             borderRadius: '12px',
                             border: 'none',
                             fontWeight: '700',
                             fontSize: '14px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            boxShadow: '0 8px 16px -4px rgba(79, 70, 229, 0.3)'
                         }}
                     >
                         Ver todos los productos
@@ -476,23 +505,33 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                             <div
                                 key={producto.id}
                                 style={{
-                                    backgroundColor: '#ffffff',
+                                    backgroundColor: '#1e293b',
                                     borderRadius: '22px',
-                                    border: '1px solid #e2e8f0',
+                                    border: '1px solid #334155',
                                     overflow: 'hidden',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     justifyContent: 'space-between',
-                                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+                                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
                                     transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
                                     position: 'relative'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-4px)';
+                                    e.currentTarget.style.boxShadow = '0 20px 40px -12px rgba(79, 70, 229, 0.3)';
+                                    e.currentTarget.style.borderColor = '#4f46e5';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)';
+                                    e.currentTarget.style.borderColor = '#334155';
                                 }}
                             >
                                 {/* Contenedor Imagen */}
                                 <div style={{
                                     height: '210px',
                                     width: '100%',
-                                    backgroundColor: '#f8fafc',
+                                    backgroundColor: '#0f172a',
                                     position: 'relative',
                                     overflow: 'hidden'
                                 }}>
@@ -509,35 +548,36 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                         }}
                                     />
                                     
-                                    {/* Tag Categoría */}
-                                    {producto.categoria && (
+                                    {/* Tag Categoría - Modo Oscuro */}
+                                    {producto.categoria && producto.categoria.nombre && (
                                         <span style={{
                                             position: 'absolute',
                                             top: '12px',
                                             left: '12px',
-                                            backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
                                             backdropFilter: 'blur(8px)',
-                                            color: '#ffffff',
+                                            color: '#c7d2fe',
                                             fontSize: '11px',
                                             fontWeight: '700',
                                             padding: '5px 12px',
                                             borderRadius: '20px',
-                                            letterSpacing: '0.02em'
+                                            letterSpacing: '0.02em',
+                                            border: '1px solid rgba(99, 102, 241, 0.2)'
                                         }}>
                                             {producto.categoria.nombre}
                                         </span>
                                     )}
 
-                                    {/* Stock Badge */}
+                                    {/* Stock Badge - Modo Oscuro */}
                                     <span style={{
                                         position: 'absolute',
                                         top: '12px',
                                         right: '12px',
                                         backgroundColor: isOutOfStock 
-                                            ? '#ef4444' 
+                                            ? '#7f1d1d' 
                                             : isLowStock 
-                                                ? '#f59e0b' 
-                                                : '#10b981',
+                                                ? '#78350f' 
+                                                : '#065f46',
                                         color: '#ffffff',
                                         fontSize: '11px',
                                         fontWeight: '800',
@@ -546,7 +586,7 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '5px',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
                                     }}>
                                         {isOutOfStock ? (
                                             <>
@@ -564,7 +604,7 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                     </span>
                                 </div>
 
-                                {/* Cuerpo de la Tarjeta */}
+                                {/* Cuerpo de la Tarjeta - Modo Oscuro */}
                                 <div style={{
                                     padding: '20px',
                                     display: 'flex',
@@ -577,7 +617,7 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                         <h3 style={{
                                             fontSize: '17px',
                                             fontWeight: '800',
-                                            color: '#0f172a',
+                                            color: '#f1f5f9',
                                             margin: '0 0 8px 0',
                                             lineHeight: '1.3',
                                             overflow: 'hidden',
@@ -588,7 +628,7 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                         </h3>
                                         <p style={{
                                             fontSize: '13px',
-                                            color: '#64748b',
+                                            color: '#94a3b8',
                                             margin: 0,
                                             height: '38px',
                                             overflow: 'hidden',
@@ -601,7 +641,7 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                         </p>
                                     </div>
 
-                                    {/* Precio y Botones */}
+                                    {/* Precio y Botones - Modo Oscuro */}
                                     <div>
                                         <div style={{
                                             display: 'flex',
@@ -609,15 +649,15 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                             gap: '6px',
                                             marginBottom: '16px'
                                         }}>
-                                            <span style={{ fontSize: '22px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.02em' }}>
+                                            <span style={{ fontSize: '22px', fontWeight: '900', color: '#f1f5f9', letterSpacing: '-0.02em' }}>
                                                 ${producto.precio?.toLocaleString('es-MX', { minimumFractionDigits: 2 }) || '0.00'}
                                             </span>
-                                            <span style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>
+                                            <span style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8' }}>
                                                 MXN
                                             </span>
                                         </div>
 
-                                        {/* Acciones del Producto */}
+                                        {/* Acciones del Producto - Modo Oscuro */}
                                         {!isOutOfStock && user && isClient && (
                                             <div style={{ display: 'flex', gap: '10px' }}>
                                                 <button
@@ -633,14 +673,22 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                                         borderRadius: '14px',
                                                         fontWeight: '700',
                                                         fontSize: '13px',
-                                                        backgroundColor: '#f1f5f9',
-                                                        color: '#1e293b',
-                                                        border: '1px solid #cbd5e1',
+                                                        backgroundColor: '#0f172a',
+                                                        color: '#94a3b8',
+                                                        border: '1px solid #334155',
                                                         cursor: 'pointer',
-                                                        transition: 'background-color 0.15s ease'
+                                                        transition: 'all 0.15s ease'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#334155';
+                                                        e.currentTarget.style.color = '#f1f5f9';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.backgroundColor = '#0f172a';
+                                                        e.currentTarget.style.color = '#94a3b8';
                                                     }}
                                                 >
-                                                    <ShoppingCart size={16} color="#1e293b" />
+                                                    <ShoppingCart size={16} color="#94a3b8" />
                                                     <span>+ Carrito</span>
                                                 </button>
 
@@ -657,12 +705,20 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                                         borderRadius: '14px',
                                                         fontWeight: '700',
                                                         fontSize: '13px',
-                                                        backgroundColor: '#2563eb',
+                                                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
                                                         color: '#ffffff',
                                                         border: 'none',
                                                         cursor: 'pointer',
-                                                        boxShadow: '0 4px 12px rgba(37, 99, 235, 0.35)',
+                                                        boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
                                                         transition: 'transform 0.15s ease'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(79, 70, 229, 0.4)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(0)';
+                                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(79, 70, 229, 0.3)';
                                                     }}
                                                 >
                                                     <Zap size={16} color="#ffffff" />
@@ -680,9 +736,9 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                                     borderRadius: '14px',
                                                     fontWeight: '700',
                                                     fontSize: '13px',
-                                                    backgroundColor: '#f1f5f9',
-                                                    color: '#94a3b8',
-                                                    border: 'none',
+                                                    backgroundColor: '#0f172a',
+                                                    color: '#64748b',
+                                                    border: '1px solid #334155',
                                                     cursor: 'not-allowed'
                                                 }}
                                             >
@@ -699,17 +755,24 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                                     borderRadius: '14px',
                                                     fontWeight: '700',
                                                     fontSize: '13px',
-                                                    backgroundColor: '#eff6ff',
-                                                    color: '#2563eb',
-                                                    border: '1px solid #bfdbfe',
+                                                    backgroundColor: '#1e293b',
+                                                    color: '#818cf8',
+                                                    border: '1px solid #4f46e5',
                                                     cursor: 'pointer',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    gap: '8px'
+                                                    gap: '8px',
+                                                    transition: 'all 0.15s ease'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#2d3748';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#1e293b';
                                                 }}
                                             >
-                                                <LogIn size={16} color="#2563eb" />
+                                                <LogIn size={16} color="#818cf8" />
                                                 <span>Inicia sesión para comprar</span>
                                             </button>
                                         )}
@@ -723,9 +786,9 @@ export const Catalogo = ({ setVistaActual, user, addToCart, comprarAhora }) => {
                                                     borderRadius: '14px',
                                                     fontWeight: '700',
                                                     fontSize: '13px',
-                                                    backgroundColor: '#f8fafc',
-                                                    color: '#94a3b8',
-                                                    border: '1px solid #e2e8f0',
+                                                    backgroundColor: '#0f172a',
+                                                    color: '#64748b',
+                                                    border: '1px solid #334155',
                                                     cursor: 'not-allowed'
                                                 }}
                                             >

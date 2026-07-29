@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { apiService } from '../services/apiService';
 import { 
     X, ShoppingBag, Trash2, Plus, Minus, CreditCard, 
-    Loader2, Sparkles, ShieldCheck, PackageCheck, ArrowRight, Tag, RefreshCw
+    Loader2, Sparkles, ShieldCheck, PackageCheck, ArrowRight, Tag, RefreshCw,
+    AlertCircle, CheckCircle, DollarSign
 } from 'lucide-react';
 
 const Cart = ({ 
@@ -64,148 +65,478 @@ const Cart = ({
     };
 
     return (
-        <div className="fixed inset-0 z-[9999] overflow-hidden font-sans">
+        <div style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            overflow: 'hidden',
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
+        }}>
             {/* Overlay Oscuro con Blur */}
             <div
-                className="absolute inset-0 bg-slate-950/65 backdrop-blur-md transition-opacity duration-300"
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'rgba(15, 23, 42, 0.85)',
+                    backdropFilter: 'blur(12px)',
+                    transition: 'opacity 0.3s ease'
+                }}
                 onClick={handleClose}
             />
 
-            {/* Panel Deslizante Lateral */}
-            <div className="absolute inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10">
-                <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col h-full border-l border-slate-200">
+            {/* Panel Deslizante Lateral - Modo Oscuro */}
+            <div style={{
+                position: 'absolute',
+                insetY: 0,
+                right: 0,
+                maxWidth: '100%',
+                display: 'flex',
+                paddingLeft: '16px'
+            }}>
+                <div style={{
+                    width: '100vw',
+                    maxWidth: '440px',
+                    background: '#1e293b',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.6)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                    borderLeft: '1px solid #334155',
+                    borderRadius: '32px 0 0 32px',
+                    overflow: 'hidden'
+                }}>
                     
-                    {/* ENCABEZADO HEADER */}
-                    <div className="px-6 py-5 bg-gradient-to-b from-slate-100 to-white border-b border-slate-200/90 flex items-center justify-between relative">
-                        <div className="flex items-center gap-3.5">
-                            <div className="w-11 h-11 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/30 ring-4 ring-indigo-100">
-                                <ShoppingBag className="w-5 h-5 text-white" />
+                    {/* ENCABEZADO HEADER - Modo Oscuro */}
+                    <div style={{
+                        padding: '24px 28px',
+                        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                        borderBottom: '1px solid #334155',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                            <div style={{
+                                width: '44px',
+                                height: '44px',
+                                background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                                color: 'white',
+                                borderRadius: '14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 8px 16px -4px rgba(79, 70, 229, 0.4)'
+                            }}>
+                                <ShoppingBag style={{ width: '20px', height: '20px' }} />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black tracking-tight leading-tight" style={{ color: '#0f172a' }}>
+                                <h2 style={{
+                                    fontSize: '20px',
+                                    fontWeight: '900',
+                                    color: '#f1f5f9',
+                                    letterSpacing: '-0.02em',
+                                    margin: 0,
+                                    lineHeight: '1.2'
+                                }}>
                                     Tu Carrito
                                 </h2>
-                                <p className="text-xs font-bold mt-0.5 flex items-center gap-1.5" style={{ color: '#475569' }}>
-                                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                                <p style={{
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    color: '#94a3b8',
+                                    margin: '2px 0 0 0',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px'
+                                }}>
+                                    <span style={{
+                                        width: '8px',
+                                        height: '8px',
+                                        borderRadius: '50%',
+                                        background: cart.length > 0 ? '#10b981' : '#64748b',
+                                        display: 'inline-block'
+                                    }} />
                                     {cart.length} {cart.length === 1 ? 'producto seleccionado' : 'productos seleccionados'}
                                 </p>
                             </div>
                         </div>
 
-                        {/* Botón Cerrar */}
+                        {/* Botón Cerrar - Modo Oscuro */}
                         <button
                             onClick={handleClose}
-                            className="p-2.5 text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-2xl transition-all active:scale-90 border border-slate-300/80 group"
+                            style={{
+                                padding: '10px',
+                                background: '#0f172a',
+                                border: '1px solid #334155',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                color: '#94a3b8',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = '#334155';
+                                e.currentTarget.style.color = '#f1f5f9';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = '#0f172a';
+                                e.currentTarget.style.color = '#94a3b8';
+                            }}
                             aria-label="Cerrar carrito"
                         >
-                            <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200" />
+                            <X style={{ width: '20px', height: '20px' }} />
                         </button>
                     </div>
 
-                    {/* CUERPO DE PRODUCTOS */}
-                    <div className="flex-1 overflow-y-auto p-6 bg-slate-50/70 space-y-4">
+                    {/* CUERPO DE PRODUCTOS - Modo Oscuro */}
+                    <div style={{
+                        flex: 1,
+                        overflowY: 'auto',
+                        padding: '24px 28px',
+                        background: '#0f172a',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '16px'
+                    }}>
                         
-                        {/* Mensaje de Error */}
+                        {/* Mensaje de Error - Modo Oscuro */}
                         {error && (
-                            <div className="bg-rose-50 border-2 border-rose-300 p-4 rounded-2xl text-xs font-black shadow-sm flex items-center gap-3" style={{ color: '#881337' }}>
-                                <span className="w-2.5 h-2.5 rounded-full bg-rose-600 shrink-0 animate-ping" />
+                            <div style={{
+                                background: 'rgba(239, 68, 68, 0.15)',
+                                border: '1px solid #7f1d1d',
+                                padding: '14px 18px',
+                                borderRadius: '14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                color: '#fca5a5',
+                                fontSize: '13px',
+                                fontWeight: '600'
+                            }}>
+                                <div style={{
+                                    background: '#ef4444',
+                                    color: 'white',
+                                    padding: '6px',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    flexShrink: 0
+                                }}>
+                                    <AlertCircle style={{ width: '16px', height: '16px' }} />
+                                </div>
                                 <span>{error}</span>
                             </div>
                         )}
 
-                        {/* Estado Vacío */}
+                        {/* Estado Vacío - Modo Oscuro */}
                         {cart.length === 0 ? (
-                            <div className="text-center py-20 flex flex-col items-center justify-center">
-                                <div className="relative mb-5">
-                                    <div className="w-24 h-24 bg-gradient-to-tr from-indigo-100 via-indigo-50 to-slate-100 text-indigo-600 rounded-3xl flex items-center justify-center border border-indigo-200/80 shadow-inner">
-                                        <PackageCheck className="w-12 h-12 text-indigo-600" />
+                            <div style={{
+                                textAlign: 'center',
+                                padding: '60px 20px',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flex: 1
+                            }}>
+                                <div style={{
+                                    position: 'relative',
+                                    marginBottom: '20px'
+                                }}>
+                                    <div style={{
+                                        width: '96px',
+                                        height: '96px',
+                                        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+                                        borderRadius: '28px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        border: '1px solid #334155'
+                                    }}>
+                                        <PackageCheck style={{ width: '48px', height: '48px', color: '#818cf8' }} />
                                     </div>
-                                    <span className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-full border border-slate-200 shadow flex items-center justify-center">
-                                        <Sparkles className="w-4 h-4 text-amber-500" />
+                                    <span style={{
+                                        position: 'absolute',
+                                        bottom: '-4px',
+                                        right: '-4px',
+                                        width: '28px',
+                                        height: '28px',
+                                        background: '#1e293b',
+                                        borderRadius: '50%',
+                                        border: '1px solid #334155',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                                    }}>
+                                        <Sparkles style={{ width: '14px', height: '14px', color: '#fbbf24' }} />
                                     </span>
                                 </div>
-                                <h3 className="font-black text-xl tracking-tight" style={{ color: '#0f172a' }}>
+                                <h3 style={{
+                                    fontSize: '18px',
+                                    fontWeight: '900',
+                                    color: '#f1f5f9',
+                                    margin: '0 0 8px 0'
+                                }}>
                                     El carrito está vacío
                                 </h3>
-                                <p className="text-xs font-bold mt-2 max-w-[240px] leading-relaxed" style={{ color: '#64748b' }}>
+                                <p style={{
+                                    fontSize: '13px',
+                                    fontWeight: '500',
+                                    color: '#94a3b8',
+                                    margin: '0 0 24px 0',
+                                    maxWidth: '280px',
+                                    lineHeight: '1.5'
+                                }}>
                                     ¡Explora nuestro catálogo y agrega tus productos preferidos!
                                 </p>
                                 
                                 <button
                                     onClick={handleClose}
-                                    style={{ backgroundColor: '#4f46e5', color: '#ffffff' }}
-                                    className="mt-6 px-7 py-3.5 hover:bg-indigo-700 rounded-2xl text-xs font-black uppercase tracking-wider shadow-lg shadow-indigo-600/30 active:scale-95 transition-all flex items-center gap-2.5 group"
+                                    style={{
+                                        padding: '14px 32px',
+                                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                                        color: '#ffffff',
+                                        borderRadius: '16px',
+                                        border: 'none',
+                                        fontWeight: '700',
+                                        fontSize: '13px',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.4)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 16px 30px -8px rgba(79, 70, 229, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(79, 70, 229, 0.4)';
+                                    }}
                                 >
-                                    <span style={{ color: '#ffffff' }}>Explorar Catálogo</span>
-                                    <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                                    <span>Explorar Catálogo</span>
+                                    <ArrowRight style={{ width: '18px', height: '18px' }} />
                                 </button>
                             </div>
                         ) : (
-                            /* Tarjetas de Productos */
-                            <div className="space-y-3.5">
+                            /* Tarjetas de Productos - Modo Oscuro */
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                                 {cart.map((item) => (
                                     <div
                                         key={item.producto.id}
-                                        className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-200 flex items-center gap-4 group"
+                                        style={{
+                                            padding: '16px',
+                                            background: '#1e293b',
+                                            borderRadius: '18px',
+                                            border: '1px solid #334155',
+                                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                                            transition: 'all 0.2s ease',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '16px'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.borderColor = '#4f46e5';
+                                            e.currentTarget.style.boxShadow = '0 8px 24px rgba(79, 70, 229, 0.15)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.borderColor = '#334155';
+                                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
+                                        }}
                                     >
                                         {/* Imagen del Producto */}
-                                        <div className="relative shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                                        <div style={{
+                                            flexShrink: 0,
+                                            overflow: 'hidden',
+                                            borderRadius: '12px',
+                                            border: '1px solid #334155',
+                                            background: '#0f172a',
+                                            width: '64px',
+                                            height: '64px'
+                                        }}>
                                             <img
                                                 src={item.producto.imagenUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=100"}
                                                 alt={item.producto.nombre}
-                                                className="w-16 h-16 object-cover group-hover:scale-105 transition-transform duration-300"
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover',
+                                                    transition: 'transform 0.3s ease'
+                                                }}
                                             />
                                         </div>
 
-                                        {/* Datos del Producto */}
-                                        <div className="flex-grow min-w-0">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <h4 className="font-black text-sm truncate tracking-tight" style={{ color: '#0f172a' }}>
+                                        {/* Datos del Producto - Modo Oscuro */}
+                                        <div style={{ flexGrow: 1, minWidth: 0 }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'flex-start',
+                                                justifyContent: 'space-between',
+                                                gap: '8px'
+                                            }}>
+                                                <h4 style={{
+                                                    fontSize: '14px',
+                                                    fontWeight: '800',
+                                                    color: '#f1f5f9',
+                                                    margin: 0,
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap'
+                                                }}>
                                                     {item.producto.nombre}
                                                 </h4>
                                                 
                                                 <button
                                                     onClick={() => removeFromCart(item.producto.id)}
-                                                    className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-xl transition-all active:scale-90 shrink-0"
+                                                    style={{
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        color: '#64748b',
+                                                        padding: '4px',
+                                                        borderRadius: '8px',
+                                                        transition: 'all 0.2s ease',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        flexShrink: 0
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.color = '#f87171';
+                                                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.color = '#64748b';
+                                                        e.currentTarget.style.background = 'none';
+                                                    }}
                                                     title="Quitar producto"
                                                 >
-                                                    <Trash2 className="w-4 h-4" />
+                                                    <Trash2 style={{ width: '16px', height: '16px' }} />
                                                 </button>
                                             </div>
 
-                                            <p className="text-xs font-black mt-0.5 tracking-tight" style={{ color: '#4f46e5' }}>
-                                                ${item.producto.precio.toFixed(2)} <span className="text-[10px] font-bold" style={{ color: '#64748b' }}>c/u</span>
+                                            <p style={{
+                                                fontSize: '13px',
+                                                fontWeight: '700',
+                                                color: '#818cf8',
+                                                margin: '2px 0 0 0'
+                                            }}>
+                                                ${item.producto.precio.toFixed(2)} <span style={{ fontSize: '10px', fontWeight: '600', color: '#64748b' }}>c/u</span>
                                             </p>
 
-                                            {/* Incremental y Subtotal */}
-                                            <div className="flex items-center justify-between mt-3.5">
-                                                <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-2xl border border-slate-200 shadow-inner">
+                                            {/* Incremental y Subtotal - Modo Oscuro */}
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                marginTop: '10px'
+                                            }}>
+                                                <div style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px',
+                                                    background: '#0f172a',
+                                                    padding: '4px',
+                                                    borderRadius: '14px',
+                                                    border: '1px solid #334155'
+                                                }}>
                                                     <button
                                                         onClick={() => updateQuantity(item.producto.id, item.cantidad - 1)}
-                                                        className="w-7 h-7 bg-white hover:bg-slate-200 text-slate-800 rounded-xl flex items-center justify-center transition-all shadow-sm font-black active:scale-90 disabled:opacity-30 border border-slate-200"
                                                         disabled={item.cantidad <= 1}
+                                                        style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            background: '#1e293b',
+                                                            border: 'none',
+                                                            borderRadius: '10px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            cursor: item.cantidad <= 1 ? 'not-allowed' : 'pointer',
+                                                            opacity: item.cantidad <= 1 ? 0.4 : 1,
+                                                            transition: 'all 0.2s ease',
+                                                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            if (item.cantidad > 1) {
+                                                                e.currentTarget.style.background = '#2d3748';
+                                                            }
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            if (item.cantidad > 1) {
+                                                                e.currentTarget.style.background = '#1e293b';
+                                                            }
+                                                        }}
                                                     >
-                                                        <Minus className="w-3.5 h-3.5" style={{ color: '#0f172a' }} />
+                                                        <Minus style={{ width: '14px', height: '14px', color: '#94a3b8' }} />
                                                     </button>
 
-                                                    <span className="px-2 text-xs font-black min-w-[22px] text-center" style={{ color: '#0f172a' }}>
+                                                    <span style={{
+                                                        padding: '0 8px',
+                                                        fontSize: '13px',
+                                                        fontWeight: '800',
+                                                        color: '#f1f5f9',
+                                                        minWidth: '20px',
+                                                        textAlign: 'center'
+                                                    }}>
                                                         {item.cantidad}
                                                     </span>
 
                                                     <button
                                                         onClick={() => updateQuantity(item.producto.id, item.cantidad + 1)}
-                                                        className="w-7 h-7 bg-white hover:bg-slate-200 text-slate-800 rounded-xl flex items-center justify-center transition-all shadow-sm font-black active:scale-90 disabled:opacity-30 border border-slate-200"
                                                         disabled={item.cantidad >= item.producto.stock}
+                                                        style={{
+                                                            width: '28px',
+                                                            height: '28px',
+                                                            background: '#1e293b',
+                                                            border: 'none',
+                                                            borderRadius: '10px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            cursor: item.cantidad >= item.producto.stock ? 'not-allowed' : 'pointer',
+                                                            opacity: item.cantidad >= item.producto.stock ? 0.4 : 1,
+                                                            transition: 'all 0.2s ease',
+                                                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                                                        }}
+                                                        onMouseEnter={(e) => {
+                                                            if (item.cantidad < item.producto.stock) {
+                                                                e.currentTarget.style.background = '#2d3748';
+                                                            }
+                                                        }}
+                                                        onMouseLeave={(e) => {
+                                                            if (item.cantidad < item.producto.stock) {
+                                                                e.currentTarget.style.background = '#1e293b';
+                                                            }
+                                                        }}
                                                     >
-                                                        <Plus className="w-3.5 h-3.5" style={{ color: '#0f172a' }} />
+                                                        <Plus style={{ width: '14px', height: '14px', color: '#94a3b8' }} />
                                                     </button>
                                                 </div>
 
-                                                <div className="text-right">
-                                                    <span className="text-[10px] font-black uppercase tracking-wider block leading-none mb-1" style={{ color: '#64748b' }}>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <span style={{
+                                                        fontSize: '9px',
+                                                        fontWeight: '800',
+                                                        textTransform: 'uppercase',
+                                                        letterSpacing: '0.5px',
+                                                        color: '#64748b',
+                                                        display: 'block',
+                                                        marginBottom: '2px'
+                                                    }}>
                                                         Subtotal
                                                     </span>
-                                                    <span className="font-black text-base tracking-tight" style={{ color: '#0f172a' }}>
+                                                    <span style={{
+                                                        fontSize: '15px',
+                                                        fontWeight: '900',
+                                                        color: '#f1f5f9'
+                                                    }}>
                                                         ${(item.producto.precio * item.cantidad).toFixed(2)}
                                                     </span>
                                                 </div>
@@ -217,87 +548,203 @@ const Cart = ({
                         )}
                     </div>
 
-                    {/* FOOTER CON BOTONES CON FONDOS DE COLOR VIBRANTE */}
+                    {/* FOOTER CON BOTONES - Modo Oscuro */}
                     {cart.length > 0 && (
-                        <div className="border-t border-slate-200/90 p-6 bg-white space-y-4 shadow-2xl relative z-10">
+                        <div style={{
+                            borderTop: '1px solid #334155',
+                            padding: '24px 28px',
+                            background: '#1e293b',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '16px',
+                            boxShadow: '0 -8px 30px rgba(0, 0, 0, 0.3)'
+                        }}>
                             
-                            {/* Caja de Total */}
-                            <div className="space-y-3 bg-gradient-to-br from-slate-50 to-indigo-50/40 p-4 rounded-2xl border border-slate-200 shadow-sm">
-                                <div className="flex justify-between items-center text-xs font-black">
-                                    <span className="flex items-center gap-1.5" style={{ color: '#475569' }}>
-                                        <Tag className="w-3.5 h-3.5 text-indigo-600" /> Costo de envío
+                            {/* Caja de Total - Modo Oscuro */}
+                            <div style={{
+                                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                                padding: '16px 20px',
+                                borderRadius: '16px',
+                                border: '1px solid #334155'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    fontSize: '12px',
+                                    fontWeight: '800',
+                                    color: '#94a3b8',
+                                    marginBottom: '8px'
+                                }}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <Tag style={{ width: '14px', height: '14px', color: '#818cf8' }} />
+                                        Costo de envío
                                     </span>
-                                    <span className="text-emerald-800 font-black uppercase text-[10px] bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-sm">
+                                    <span style={{
+                                        background: 'rgba(16, 185, 129, 0.15)',
+                                        color: '#6ee7b7',
+                                        padding: '2px 12px',
+                                        borderRadius: '20px',
+                                        fontSize: '10px',
+                                        fontWeight: '800',
+                                        border: '1px solid rgba(16, 185, 129, 0.2)'
+                                    }}>
                                         Gratis
                                     </span>
                                 </div>
                                 
-                                <div className="flex justify-between items-center pt-2.5 border-t border-slate-200">
-                                    <span className="text-sm font-black tracking-tight" style={{ color: '#0f172a' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    paddingTop: '10px',
+                                    borderTop: '1px solid #334155'
+                                }}>
+                                    <span style={{
+                                        fontSize: '14px',
+                                        fontWeight: '800',
+                                        color: '#f1f5f9'
+                                    }}>
                                         Total acumulado
                                     </span>
-                                    <div className="text-right">
-                                        <span className="text-2xl font-black tracking-tight block leading-none" style={{ color: '#4f46e5' }}>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <span style={{
+                                            fontSize: '24px',
+                                            fontWeight: '900',
+                                            color: '#818cf8',
+                                            display: 'block',
+                                            lineHeight: '1.2'
+                                        }}>
                                             ${total.toFixed(2)}
                                         </span>
-                                        <span className="text-[10px] font-black tracking-widest uppercase" style={{ color: '#64748b' }}>
+                                        <span style={{
+                                            fontSize: '9px',
+                                            fontWeight: '700',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.5px',
+                                            color: '#64748b'
+                                        }}>
                                             MXN
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* BOTONES CON COLOR DE FONDO DESTACADO */}
-                            <div className="flex items-center gap-3">
+                            {/* BOTONES - Modo Oscuro */}
+                            <div style={{ display: 'flex', gap: '12px' }}>
                                 
-                                {/* 1. BOTÓN VACIAR (Fondo Rojo Suave con Borde y Texto Rojo Carmesí) */}
+                                {/* Botón Vaciar - Modo Oscuro */}
                                 <button
                                     onClick={clearCart}
-                                    style={{ 
-                                        backgroundColor: '#ffe4e6', 
-                                        borderColor: '#fecdd3', 
-                                        color: '#be123c' 
+                                    style={{
+                                        padding: '14px 18px',
+                                        background: 'rgba(239, 68, 68, 0.15)',
+                                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                                        borderRadius: '14px',
+                                        fontWeight: '700',
+                                        fontSize: '11px',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px',
+                                        cursor: 'pointer',
+                                        color: '#f87171',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        flexShrink: 0
                                     }}
-                                    className="px-5 py-4 hover:bg-rose-200 hover:border-rose-300 rounded-2xl font-black text-xs uppercase tracking-wider transition-all active:scale-95 border shadow-sm flex items-center gap-2 group shrink-0"
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
+                                        e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                                        e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                                    }}
                                     title="Vaciar carrito"
                                 >
-                                    <RefreshCw className="w-4 h-4 text-rose-700 group-hover:rotate-180 transition-transform duration-300" />
-                                    <span style={{ color: '#be123c' }}>Vaciar</span>
+                                    <RefreshCw style={{ width: '16px', height: '16px' }} />
+                                    <span>Vaciar</span>
                                 </button>
                                 
-                                {/* 2. BOTÓN PROCEDER AL PAGO (Fondo Indigo/Azul Vibrante con Texto Blanco) */}
+                                {/* Botón Proceder al Pago - Modo Oscuro */}
                                 <button
                                     onClick={handleCheckout}
                                     disabled={loading}
-                                    style={{ 
-                                        backgroundColor: '#4f46e5', 
-                                        color: '#ffffff' 
+                                    style={{
+                                        flex: 1,
+                                        padding: '16px 24px',
+                                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: '14px',
+                                        fontWeight: '700',
+                                        fontSize: '12px',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.5px',
+                                        cursor: loading ? 'not-allowed' : 'pointer',
+                                        opacity: loading ? 0.7 : 1,
+                                        boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.4)',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '10px'
                                     }}
-                                    className="flex-1 py-4 px-6 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-2xl font-black text-xs uppercase tracking-wider shadow-xl shadow-indigo-600/35 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2.5 group"
+                                    onMouseEnter={(e) => {
+                                        if (!loading) {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.boxShadow = '0 16px 30px -8px rgba(79, 70, 229, 0.5)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!loading) {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = '0 10px 20px -5px rgba(79, 70, 229, 0.4)';
+                                        }
+                                    }}
                                 >
                                     {loading ? (
                                         <>
-                                            <Loader2 className="w-4 h-4 animate-spin text-white" />
-                                            <span style={{ color: '#ffffff' }}>Procesando...</span>
+                                            <Loader2 style={{ width: '18px', height: '18px', animation: 'spin 1s linear infinite' }} />
+                                            <span>Procesando...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <CreditCard className="w-4 h-4 text-white group-hover:scale-110 transition-transform" />
-                                            <span style={{ color: '#ffffff' }}>Proceder al Pago</span>
+                                            <CreditCard style={{ width: '18px', height: '18px' }} />
+                                            <span>Proceder al Pago</span>
+                                            <ArrowRight style={{ width: '18px', height: '18px' }} />
                                         </>
                                     )}
                                 </button>
                             </div>
 
-                            {/* Garantía */}
-                            <div className="flex items-center justify-center gap-1.5 text-xs font-bold pt-1" style={{ color: '#64748b' }}>
-                                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                            {/* Garantía - Modo Oscuro */}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                fontSize: '11px',
+                                fontWeight: '700',
+                                color: '#94a3b8',
+                                paddingTop: '4px'
+                            }}>
+                                <ShieldCheck style={{ width: '16px', height: '16px', color: '#6ee7b7' }} />
                                 <span>Garantía de compra 100% encriptada</span>
                             </div>
                         </div>
                     )}
                 </div>
             </div>
+
+            {/* Estilo de animación para el spinner */}
+            <style>{`
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 };

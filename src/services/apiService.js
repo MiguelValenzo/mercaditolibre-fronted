@@ -309,12 +309,25 @@ procesarVenta: async (venta) => {
     // PAGOS (Stripe)
     // =============================================
 
-    crearIntencionPago: async (idVenta) => {
+  // En apiService.js, la función crearIntencionPago debe ser:
+
+crearIntencionPago: async (idVenta) => {
+    try {
         const response = await fetch(API_URL + 'pagos/crear-intencion', {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({ idVenta, moneda: 'mxn' })
         });
-        return handleResponse(response);
+        const data = await handleResponse(response);
+        console.log('📦 Respuesta de crearIntencionPago:', data);
+        return data;
+    } catch (error) {
+        console.error('❌ Error en crearIntencionPago:', error);
+        // ✅ Devolver un objeto con modoPrueba en caso de error
+        return {
+            modoPrueba: true,
+            mensaje: 'Error al conectar con Stripe'
+        };
     }
+}, 
 };

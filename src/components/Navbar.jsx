@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { apiService } from '../services/apiService';
 import { 
     ShoppingCart, LogOut, User, LayoutDashboard, 
-    ShoppingBag, Menu, X, ShieldCheck, LogIn, UserPlus, PackageCheck 
+    ShoppingBag, Menu, X, ShieldCheck, LogIn, UserPlus, PackageCheck,
+    Sparkles, Store
 } from 'lucide-react';
 
 export const Navbar = ({ vistaActual, setVistaActual, user, onLogout, cartCount, openCart }) => {
@@ -19,52 +20,173 @@ export const Navbar = ({ vistaActual, setVistaActual, user, onLogout, cartCount,
     const isAdmin = user && (user.rol === 'ADMIN' || user.rol === 'ROLE_ADMIN');
 
     return (
-        <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm transition-all duration-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-20">
+        <header style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 50,
+            background: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid rgba(51, 65, 85, 0.5)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+            transition: 'all 0.2s ease',
+            fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
+        }}>
+            <div style={{
+                maxWidth: '1320px',
+                margin: '0 auto',
+                padding: '0 24px',
+                boxSizing: 'border-box'
+            }}>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    height: '76px'
+                }}>
                     
                     {/* 1. BRANDING / LOGO */}
                     <div 
                         onClick={() => setVistaActual('catalogo')}
-                        className="flex items-center gap-3 cursor-pointer select-none group"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            cursor: 'pointer',
+                            userSelect: 'none'
+                        }}
                     >
-                        <div className="w-11 h-11 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:bg-indigo-700 group-hover:scale-105 transition-all duration-200">
-                            <ShoppingBag className="w-5 h-5" />
+                        <div style={{
+                            width: '44px',
+                            height: '44px',
+                            background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                            borderRadius: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            boxShadow: '0 8px 16px -4px rgba(79, 70, 229, 0.3)',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                            e.currentTarget.style.boxShadow = '0 12px 24px -4px rgba(79, 70, 229, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = '0 8px 16px -4px rgba(79, 70, 229, 0.3)';
+                        }}>
+                            <ShoppingBag style={{ width: '20px', height: '20px' }} />
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-xl font-black text-slate-900 tracking-tight leading-none group-hover:text-indigo-600 transition-colors">
-                                Mercadito<span className="text-indigo-600">Libre</span>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{
+                                fontSize: '20px',
+                                fontWeight: '900',
+                                color: '#f1f5f9',
+                                letterSpacing: '-0.02em',
+                                lineHeight: '1.2'
+                            }}>
+                                Mercadito<span style={{ color: '#818cf8' }}>Libre</span>
                             </span>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                            <span style={{
+                                fontSize: '9px',
+                                fontWeight: '800',
+                                color: '#64748b',
+                                textTransform: 'uppercase',
+                                letterSpacing: '1px',
+                                marginTop: '1px'
+                            }}>
                                 Tienda Oficial
                             </span>
                         </div>
                     </div>
 
-                    {/* 2. NAVEGACIÓN DESKTOP (ESPACIADO AMPLIO Y BOTONES ESTILO PILL) */}
-                    <nav className="hidden md:flex items-center gap-3">
+                    {/* 2. NAVEGACIÓN DESKTOP */}
+                    <nav style={{
+                        display: 'none',
+                        alignItems: 'center',
+                        gap: '8px',
+                        '@media (min-width: 768px)': {
+                            display: 'flex'
+                        }
+                    }}>
                         <button
                             onClick={() => setVistaActual('catalogo')}
-                            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 active:scale-95 ${
-                                vistaActual === 'catalogo'
-                                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                                    : 'text-slate-600 bg-slate-100/80 hover:bg-slate-200/70 hover:text-slate-900 border border-slate-200/50'
-                            }`}
+                            style={{
+                                padding: '10px 20px',
+                                borderRadius: '30px',
+                                fontSize: '13px',
+                                fontWeight: '700',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                background: vistaActual === 'catalogo' 
+                                    ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                    : 'rgba(51, 65, 85, 0.3)',
+                                color: vistaActual === 'catalogo' 
+                                    ? '#ffffff' 
+                                    : '#94a3b8',
+                                boxShadow: vistaActual === 'catalogo' 
+                                    ? '0 8px 16px -4px rgba(79, 70, 229, 0.3)'
+                                    : 'none'
+                            }}
+                            onMouseEnter={(e) => {
+                                if (vistaActual !== 'catalogo') {
+                                    e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
+                                    e.currentTarget.style.color = '#f1f5f9';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (vistaActual !== 'catalogo') {
+                                    e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                    e.currentTarget.style.color = '#94a3b8';
+                                }
+                            }}
                         >
-                            <ShoppingBag className="w-4 h-4" />
+                            <ShoppingBag style={{ width: '16px', height: '16px' }} />
                             Catálogo
                         </button>
 
                         {isClient && (
                             <button
                                 onClick={() => setVistaActual('miscompras')}
-                                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 active:scale-95 ${
-                                    vistaActual === 'miscompras'
-                                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                                        : 'text-slate-600 bg-slate-100/80 hover:bg-slate-200/70 hover:text-slate-900 border border-slate-200/50'
-                                }`}
+                                style={{
+                                    padding: '10px 20px',
+                                    borderRadius: '30px',
+                                    fontSize: '13px',
+                                    fontWeight: '700',
+                                    transition: 'all 0.2s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    background: vistaActual === 'miscompras' 
+                                        ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                        : 'rgba(51, 65, 85, 0.3)',
+                                    color: vistaActual === 'miscompras' 
+                                        ? '#ffffff' 
+                                        : '#94a3b8',
+                                    boxShadow: vistaActual === 'miscompras' 
+                                        ? '0 8px 16px -4px rgba(79, 70, 229, 0.3)'
+                                        : 'none'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (vistaActual !== 'miscompras') {
+                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
+                                        e.currentTarget.style.color = '#f1f5f9';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (vistaActual !== 'miscompras') {
+                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                        e.currentTarget.style.color = '#94a3b8';
+                                    }
+                                }}
                             >
-                                <PackageCheck className="w-4 h-4" />
+                                <PackageCheck style={{ width: '16px', height: '16px' }} />
                                 Mis Compras
                             </button>
                         )}
@@ -72,55 +194,182 @@ export const Navbar = ({ vistaActual, setVistaActual, user, onLogout, cartCount,
                         {isAdmin && (
                             <button
                                 onClick={() => setVistaActual('admin-panel')}
-                                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 active:scale-95 ${
-                                    vistaActual === 'admin-panel'
-                                        ? 'bg-amber-500 text-white shadow-md shadow-amber-500/25'
-                                        : 'text-slate-600 bg-amber-50/80 hover:bg-amber-100/70 hover:text-amber-900 border border-amber-200/60'
-                                }`}
+                                style={{
+                                    padding: '10px 20px',
+                                    borderRadius: '30px',
+                                    fontSize: '13px',
+                                    fontWeight: '700',
+                                    transition: 'all 0.2s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    background: vistaActual === 'admin-panel' 
+                                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                                        : 'rgba(245, 158, 11, 0.15)',
+                                    color: vistaActual === 'admin-panel' 
+                                        ? '#ffffff' 
+                                        : '#fbbf24',
+                                    boxShadow: vistaActual === 'admin-panel' 
+                                        ? '0 8px 16px -4px rgba(245, 158, 11, 0.3)'
+                                        : 'none',
+                                    border: vistaActual !== 'admin-panel' 
+                                        ? '1px solid rgba(245, 158, 11, 0.2)'
+                                        : 'none'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (vistaActual !== 'admin-panel') {
+                                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.25)';
+                                        e.currentTarget.style.color = '#fbbf24';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (vistaActual !== 'admin-panel') {
+                                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.15)';
+                                        e.currentTarget.style.color = '#fbbf24';
+                                    }
+                                }}
                             >
-                                <LayoutDashboard className="w-4 h-4" />
+                                <LayoutDashboard style={{ width: '16px', height: '16px' }} />
                                 Panel Admin
                             </button>
                         )}
                     </nav>
 
-                    {/* 3. ACCIONES DERECHA (CARRITO Y PERFIL DE USUARIO SEPARADOS) */}
-                    <div className="flex items-center gap-4">
+                    {/* 3. ACCIONES DERECHA */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px'
+                    }}>
                         
-                        {/* Botón Carrito Redondeado */}
+                        {/* Botón Carrito */}
                         <button
                             onClick={openCart}
-                            className="relative p-3 bg-slate-100/90 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 rounded-full transition-all duration-200 border border-slate-200/80 active:scale-95 shadow-sm"
+                            style={{
+                                position: 'relative',
+                                padding: '10px',
+                                background: 'rgba(51, 65, 85, 0.3)',
+                                border: '1px solid rgba(51, 65, 85, 0.4)',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                color: '#94a3b8',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(79, 70, 229, 0.2)';
+                                e.currentTarget.style.color = '#818cf8';
+                                e.currentTarget.style.borderColor = 'rgba(79, 70, 229, 0.3)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                e.currentTarget.style.color = '#94a3b8';
+                                e.currentTarget.style.borderColor = 'rgba(51, 65, 85, 0.4)';
+                            }}
                             aria-label="Abrir Carrito"
                         >
-                            <ShoppingCart className="w-5 h-5" />
+                            <ShoppingCart style={{ width: '20px', height: '20px' }} />
                             {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[11px] font-black rounded-full h-5 min-w-[20px] px-1.5 flex items-center justify-center border-2 border-white shadow-sm animate-pulse">
+                                <span style={{
+                                    position: 'absolute',
+                                    top: '-6px',
+                                    right: '-6px',
+                                    background: '#ef4444',
+                                    color: 'white',
+                                    fontSize: '10px',
+                                    fontWeight: '800',
+                                    borderRadius: '50%',
+                                    height: '20px',
+                                    minWidth: '20px',
+                                    padding: '0 5px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    border: '2px solid #0f172a',
+                                    boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)'
+                                }}>
                                     {cartCount}
                                 </span>
                             )}
                         </button>
 
-                        {/* Estado del Usuario / Invitado */}
+                        {/* Estado del Usuario */}
                         {user ? (
-                            <div className="flex items-center gap-3 pl-3 border-l-2 border-slate-200/80">
-                                {/* Badge de Perfil */}
-                                <div className="flex items-center gap-3 px-3.5 py-1.5 bg-slate-100/80 rounded-full border border-slate-200/60 shadow-inner">
-                                    <div className="relative">
-                                        <div className="w-8 h-8 bg-indigo-600 text-white font-black rounded-full flex items-center justify-center text-xs shadow-sm">
-                                            {user.nombre ? user.nombre.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                paddingLeft: '12px',
+                                borderLeft: '1px solid rgba(51, 65, 85, 0.4)'
+                            }}>
+                                {/* Perfil */}
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    padding: '4px 14px 4px 4px',
+                                    background: 'rgba(51, 65, 85, 0.3)',
+                                    borderRadius: '30px',
+                                    border: '1px solid rgba(51, 65, 85, 0.4)'
+                                }}>
+                                    <div style={{ position: 'relative' }}>
+                                        <div style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                                            color: 'white',
+                                            fontWeight: '900',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '12px',
+                                            boxShadow: '0 4px 8px rgba(79, 70, 229, 0.3)'
+                                        }}>
+                                            {user.nombre ? user.nombre.charAt(0).toUpperCase() : <User style={{ width: '16px', height: '16px' }} />}
                                         </div>
                                         {isAdmin && (
-                                            <span className="absolute -bottom-0.5 -right-0.5 bg-amber-500 text-white p-0.5 rounded-full ring-2 ring-white" title="Administrador">
-                                                <ShieldCheck className="w-2.5 h-2.5" />
+                                            <span style={{
+                                                position: 'absolute',
+                                                bottom: '-2px',
+                                                right: '-2px',
+                                                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                                                color: 'white',
+                                                padding: '2px',
+                                                borderRadius: '50%',
+                                                border: '2px solid #0f172a',
+                                                display: 'flex'
+                                            }}>
+                                                <ShieldCheck style={{ width: '10px', height: '10px' }} />
                                             </span>
                                         )}
                                     </div>
-                                    <div className="hidden lg:flex flex-col text-left">
-                                        <span className="text-xs font-black text-slate-800 leading-tight">
+                                    <div style={{
+                                        display: 'none',
+                                        flexDirection: 'column',
+                                        textAlign: 'left',
+                                        '@media (min-width: 1024px)': {
+                                            display: 'flex'
+                                        }
+                                    }}>
+                                        <span style={{
+                                            fontSize: '12px',
+                                            fontWeight: '900',
+                                            color: '#f1f5f9',
+                                            lineHeight: '1.2'
+                                        }}>
                                             {user.nombre || 'Usuario'}
                                         </span>
-                                        <span className="text-[10px] font-bold text-indigo-600 capitalize">
+                                        <span style={{
+                                            fontSize: '9px',
+                                            fontWeight: '700',
+                                            color: '#818cf8',
+                                            textTransform: 'capitalize'
+                                        }}>
                                             {isAdmin ? 'Administrador' : 'Cliente'}
                                         </span>
                                     </div>
@@ -130,116 +379,396 @@ export const Navbar = ({ vistaActual, setVistaActual, user, onLogout, cartCount,
                                 <button
                                     onClick={handleLogout}
                                     title="Cerrar sesión"
-                                    className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full border border-transparent hover:border-red-200 transition-all duration-200 active:scale-95"
+                                    style={{
+                                        padding: '8px',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#64748b',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.color = '#f87171';
+                                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.color = '#64748b';
+                                        e.currentTarget.style.background = 'none';
+                                    }}
                                 >
-                                    <LogOut className="w-4 h-4" />
+                                    <LogOut style={{ width: '18px', height: '18px' }} />
                                 </button>
                             </div>
                         ) : (
                             /* Botones Invitado */
-                            <div className="hidden sm:flex items-center gap-3 pl-2">
+                            <div style={{
+                                display: 'none',
+                                alignItems: 'center',
+                                gap: '10px',
+                                '@media (min-width: 640px)': {
+                                    display: 'flex'
+                                }
+                            }}>
                                 <button
                                     onClick={() => setVistaActual('login')}
-                                    className="px-5 py-2.5 text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200/80 hover:text-slate-900 rounded-full border border-slate-200/60 transition-all duration-200 flex items-center gap-2 active:scale-95"
+                                    style={{
+                                        padding: '10px 18px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        color: '#94a3b8',
+                                        background: 'rgba(51, 65, 85, 0.3)',
+                                        border: '1px solid rgba(51, 65, 85, 0.4)',
+                                        borderRadius: '30px',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
+                                        e.currentTarget.style.color = '#f1f5f9';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                        e.currentTarget.style.color = '#94a3b8';
+                                    }}
                                 >
-                                    <LogIn className="w-4 h-4 text-slate-500" />
+                                    <LogIn style={{ width: '16px', height: '16px' }} />
                                     Iniciar Sesión
                                 </button>
                                 <button
                                     onClick={() => setVistaActual('register')}
-                                    className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-full transition-all duration-200 shadow-md shadow-indigo-500/20 active:scale-95 flex items-center gap-2"
+                                    style={{
+                                        padding: '10px 20px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        color: '#ffffff',
+                                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                                        border: 'none',
+                                        borderRadius: '30px',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 8px 16px -4px rgba(79, 70, 229, 0.4)',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 12px 24px -4px rgba(79, 70, 229, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 8px 16px -4px rgba(79, 70, 229, 0.4)';
+                                    }}
                                 >
-                                    <UserPlus className="w-4 h-4" />
+                                    <UserPlus style={{ width: '16px', height: '16px' }} />
                                     Registrarse
                                 </button>
                             </div>
                         )}
 
-                        {/* Menú Hambuerguesa Móvil */}
+                        {/* Menú Hamburguesa Móvil */}
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="md:hidden p-2.5 text-slate-600 hover:bg-slate-100 rounded-full border border-slate-200 transition-all active:scale-95"
+                            style={{
+                                display: 'flex',
+                                padding: '10px',
+                                background: 'none',
+                                border: '1px solid rgba(51, 65, 85, 0.4)',
+                                borderRadius: '10px',
+                                cursor: 'pointer',
+                                color: '#94a3b8',
+                                transition: 'all 0.2s ease',
+                                '@media (min-width: 768px)': {
+                                    display: 'none'
+                                }
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'none';
+                            }}
                             aria-label="Menú"
                         >
-                            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                            {mobileMenuOpen ? 
+                                <X style={{ width: '20px', height: '20px' }} /> : 
+                                <Menu style={{ width: '20px', height: '20px' }} />
+                            }
                         </button>
                     </div>
                 </div>
 
-                {/* 4. MENÚ MÓVIL (Misma separación limpia) */}
+                {/* 4. MENÚ MÓVIL */}
                 {mobileMenuOpen && (
-                    <div className="md:hidden py-4 border-t border-slate-200/80 space-y-2 bg-white">
+                    <div style={{
+                        padding: '16px 0',
+                        borderTop: '1px solid rgba(51, 65, 85, 0.4)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        background: '#0f172a'
+                    }}>
                         {user && (
-                            <div className="flex items-center gap-3 px-4 py-2.5 mb-3 bg-slate-50 rounded-2xl border border-slate-200/60">
-                                <div className="w-9 h-9 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow-sm">
-                                    {user.nombre ? user.nombre.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '12px',
+                                padding: '12px 16px',
+                                marginBottom: '8px',
+                                background: 'rgba(51, 65, 85, 0.3)',
+                                borderRadius: '14px',
+                                border: '1px solid rgba(51, 65, 85, 0.4)'
+                            }}>
+                                <div style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: '900',
+                                    fontSize: '14px'
+                                }}>
+                                    {user.nombre ? user.nombre.charAt(0).toUpperCase() : <User style={{ width: '16px', height: '16px' }} />}
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-black text-slate-800">{user.nombre}</span>
-                                    <span className="text-xs font-semibold text-indigo-600 capitalize">{user.rol || 'Cliente'}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <span style={{ fontSize: '14px', fontWeight: '800', color: '#f1f5f9' }}>
+                                        {user.nombre || 'Usuario'}
+                                    </span>
+                                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#818cf8', textTransform: 'capitalize' }}>
+                                        {user.rol || 'Cliente'}
+                                    </span>
                                 </div>
                             </div>
                         )}
 
                         <button
                             onClick={() => { setVistaActual('catalogo'); setMobileMenuOpen(false); }}
-                            className={`w-full px-4 py-3 rounded-xl text-sm font-bold text-left flex items-center gap-2.5 transition-all ${
-                                vistaActual === 'catalogo' 
-                                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' 
-                                    : 'text-slate-700 hover:bg-slate-100'
-                            }`}
+                            style={{
+                                width: '100%',
+                                padding: '12px 16px',
+                                borderRadius: '12px',
+                                fontSize: '14px',
+                                fontWeight: '700',
+                                textAlign: 'left',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                border: 'none',
+                                cursor: 'pointer',
+                                background: vistaActual === 'catalogo' 
+                                    ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                    : 'transparent',
+                                color: vistaActual === 'catalogo' 
+                                    ? '#ffffff' 
+                                    : '#94a3b8',
+                                boxShadow: vistaActual === 'catalogo' 
+                                    ? '0 4px 12px rgba(79, 70, 229, 0.3)'
+                                    : 'none',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                if (vistaActual !== 'catalogo') {
+                                    e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (vistaActual !== 'catalogo') {
+                                    e.currentTarget.style.background = 'transparent';
+                                }
+                            }}
                         >
-                            <ShoppingBag className="w-4 h-4" /> Catálogo
+                            <ShoppingBag style={{ width: '18px', height: '18px' }} /> Catálogo
                         </button>
 
                         {isClient && (
                             <button
                                 onClick={() => { setVistaActual('miscompras'); setMobileMenuOpen(false); }}
-                                className={`w-full px-4 py-3 rounded-xl text-sm font-bold text-left flex items-center gap-2.5 transition-all ${
-                                    vistaActual === 'miscompras' 
-                                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' 
-                                        : 'text-slate-700 hover:bg-slate-100'
-                                }`}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 16px',
+                                    borderRadius: '12px',
+                                    fontSize: '14px',
+                                    fontWeight: '700',
+                                    textAlign: 'left',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    background: vistaActual === 'miscompras' 
+                                        ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                        : 'transparent',
+                                    color: vistaActual === 'miscompras' 
+                                        ? '#ffffff' 
+                                        : '#94a3b8',
+                                    boxShadow: vistaActual === 'miscompras' 
+                                        ? '0 4px 12px rgba(79, 70, 229, 0.3)'
+                                        : 'none',
+                                    transition: 'all 0.2s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (vistaActual !== 'miscompras') {
+                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (vistaActual !== 'miscompras') {
+                                        e.currentTarget.style.background = 'transparent';
+                                    }
+                                }}
                             >
-                                <PackageCheck className="w-4 h-4" /> Mis Compras
+                                <PackageCheck style={{ width: '18px', height: '18px' }} /> Mis Compras
                             </button>
                         )}
 
                         {isAdmin && (
                             <button
                                 onClick={() => { setVistaActual('admin-panel'); setMobileMenuOpen(false); }}
-                                className={`w-full px-4 py-3 rounded-xl text-sm font-bold text-left flex items-center gap-2.5 transition-all ${
-                                    vistaActual === 'admin-panel' 
-                                        ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' 
-                                        : 'text-slate-700 hover:bg-slate-100'
-                                }`}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 16px',
+                                    borderRadius: '12px',
+                                    fontSize: '14px',
+                                    fontWeight: '700',
+                                    textAlign: 'left',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    background: vistaActual === 'admin-panel' 
+                                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                                        : 'rgba(245, 158, 11, 0.1)',
+                                    color: vistaActual === 'admin-panel' 
+                                        ? '#ffffff' 
+                                        : '#fbbf24',
+                                    boxShadow: vistaActual === 'admin-panel' 
+                                        ? '0 4px 12px rgba(245, 158, 11, 0.3)'
+                                        : 'none',
+                                    transition: 'all 0.2s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (vistaActual !== 'admin-panel') {
+                                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.2)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (vistaActual !== 'admin-panel') {
+                                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
+                                    }
+                                }}
                             >
-                                <LayoutDashboard className="w-4 h-4" /> Panel Admin
+                                <LayoutDashboard style={{ width: '18px', height: '18px' }} /> Panel Admin
                             </button>
                         )}
 
                         {!user ? (
-                            <div className="pt-3 border-t border-slate-100 space-y-2">
+                            <div style={{
+                                paddingTop: '12px',
+                                borderTop: '1px solid rgba(51, 65, 85, 0.4)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '8px'
+                            }}>
                                 <button
                                     onClick={() => { setVistaActual('login'); setMobileMenuOpen(false); }}
-                                    className="w-full px-4 py-3 rounded-xl text-sm font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all text-left flex items-center gap-2"
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: '700',
+                                        textAlign: 'left',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: 'rgba(51, 65, 85, 0.3)',
+                                        color: '#94a3b8',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
+                                        e.currentTarget.style.color = '#f1f5f9';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                        e.currentTarget.style.color = '#94a3b8';
+                                    }}
                                 >
-                                    <LogIn className="w-4 h-4 text-slate-500" /> Iniciar Sesión
+                                    <LogIn style={{ width: '18px', height: '18px' }} /> Iniciar Sesión
                                 </button>
                                 <button
                                     onClick={() => { setVistaActual('register'); setMobileMenuOpen(false); }}
-                                    className="w-full px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl text-sm transition-all text-center flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20"
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: '700',
+                                        textAlign: 'center',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '10px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                                        color: '#ffffff',
+                                        boxShadow: '0 4px 12px rgba(79, 70, 229, 0.3)',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-1px)';
+                                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(79, 70, 229, 0.4)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(79, 70, 229, 0.3)';
+                                    }}
                                 >
-                                    <UserPlus className="w-4 h-4" /> Registrarse
+                                    <UserPlus style={{ width: '18px', height: '18px' }} /> Registrarse
                                 </button>
                             </div>
                         ) : (
-                            <div className="pt-3 border-t border-slate-100">
+                            <div style={{ paddingTop: '12px', borderTop: '1px solid rgba(51, 65, 85, 0.4)' }}>
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full px-4 py-3 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-all text-left flex items-center gap-2"
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: '700',
+                                        textAlign: 'left',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#f87171',
+                                        background: 'none',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'none';
+                                    }}
                                 >
-                                    <LogOut className="w-4 h-4" /> Cerrar Sesión
+                                    <LogOut style={{ width: '18px', height: '18px' }} /> Cerrar Sesión
                                 </button>
                             </div>
                         )}
