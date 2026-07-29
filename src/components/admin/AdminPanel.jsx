@@ -5,9 +5,10 @@ import AdminDashboard from './AdminDashboard';
 import ProductosList from './productos/ProductosList';
 import ProductoCrear from './productos/ProductoCrear';
 import ProductoEditar from './productos/ProductoEditar';
-import CategoriasList from './categorias/CategoriasList';
-import CategoriaCrear from './categorias/CategoriaCrear';
-import CategoriaEditar from './categorias/CategoriaEditar';
+// ✅ CORREGIDO: C mayúscula
+import CategoriasList from './Categorias/CategoriasList';
+import CategoriaCrear from './Categorias/CategoriaCrear';
+import CategoriaEditar from './Categorias/CategoriaEditar';
 import ProveedoresList from './proveedores/ProveedoresList';
 import ProveedorCrear from './proveedores/ProveedorCrear';
 import ProveedorEditar from './proveedores/ProveedorEditar';
