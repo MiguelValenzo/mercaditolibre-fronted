@@ -16,6 +16,7 @@ const CategoriasList = ({ navegar }) => {
         setCarga(true);
         try {
             const data = await apiService.getCategorias();
+            console.log('📂 Categorías cargadas:', data);
             setCategorias(data || []);
         } catch (error) {
             console.error('Error cargando categorías:', error);
@@ -39,7 +40,7 @@ const CategoriasList = ({ navegar }) => {
     };
 
     const categoriasFiltradas = categorias.filter(cat => 
-        cat.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        cat.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
         String(cat.id).includes(busqueda)
     );
 
@@ -165,9 +166,11 @@ const CategoriasList = ({ navegar }) => {
                         <ShieldCheck style={{ width: '18px', height: '18px', color: '#34d399' }} />
                         <span style={{ fontSize: '11px', fontWeight: '600', color: '#e2e8f0' }}>Control Activo</span>
                     </div>
-                    {/* ✅ BOTÓN CORREGIDO - Ahora navega a 'categorias' */}
                     <button
-                        onClick={() => navegar('categorias', 'crear')}
+                        onClick={() => {
+                            console.log('🔄 Navegando a categorias/crear');
+                            navegar('categorias', 'crear');
+                        }}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -437,7 +440,10 @@ const CategoriasList = ({ navegar }) => {
                     </p>
                     {categorias.length === 0 && (
                         <button
-                            onClick={() => navegar('categorias', 'crear')}
+                            onClick={() => {
+                                console.log('🔄 Navegando a categorias/crear desde vacío');
+                                navegar('categorias', 'crear');
+                            }}
                             style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',

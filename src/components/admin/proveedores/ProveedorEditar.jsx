@@ -19,6 +19,7 @@ const ProveedorEditar = ({ id, navegar }) => {
         const cargarDatos = async () => {
             try {
                 const data = await apiService.getProveedor(id);
+                console.log('🚚 Proveedor cargado:', data);
                 setFormData({
                     nombre: data.nombre || '',
                     email: data.email || '',
@@ -26,6 +27,7 @@ const ProveedorEditar = ({ id, navegar }) => {
                     direccion: data.direccion || ''
                 });
             } catch (err) {
+                console.error('❌ Error cargando proveedor:', err);
                 setError('Error cargando los datos para la edición: ' + (err.message || 'Intente de nuevo.'));
             } finally {
                 setCarga(false);
@@ -68,13 +70,22 @@ const ProveedorEditar = ({ id, navegar }) => {
         setGuardando(true);
 
         try {
-            await apiService.actualizarProveedor(id, formData);
+            const proveedorData = {
+                nombre: formData.nombre.trim(),
+                email: formData.email.trim(),
+                telefono: formData.telefono.trim(),
+                direccion: formData.direccion.trim()
+            };
+            
+            console.log('🚚 Actualizando proveedor:', id, proveedorData);
+            await apiService.actualizarProveedor(id, proveedorData);
             
             setExito(true);
             setTimeout(() => {
                 navegar('proveedores', 'list');
             }, 1400);
         } catch (err) {
+            console.error('❌ Error al actualizar proveedor:', err);
             setError('Error al actualizar el proveedor: ' + (err.message || 'Intente de nuevo.'));
         } finally {
             setGuardando(false);
@@ -131,7 +142,7 @@ const ProveedorEditar = ({ id, navegar }) => {
             paddingRight: '24px',
             boxSizing: 'border-box'
         }}>
-            {/* Header Superior Estilizado */}
+            {/* Header */}
             <div style={{ 
                 background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', 
                 borderRadius: '28px', 
@@ -148,7 +159,6 @@ const ProveedorEditar = ({ id, navegar }) => {
                 flexWrap: 'wrap',
                 gap: '16px'
             }}>
-                {/* Elemento decorativo de fondo */}
                 <div style={{
                     position: 'absolute',
                     right: '-30px',
@@ -227,7 +237,7 @@ const ProveedorEditar = ({ id, navegar }) => {
                 </div>
             </div>
 
-            {/* Tarjeta Contenedora del Formulario - Modo Oscuro */}
+            {/* Formulario */}
             <div style={{ 
                 background: '#0f172a', 
                 borderRadius: '28px', 
@@ -235,7 +245,6 @@ const ProveedorEditar = ({ id, navegar }) => {
                 boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.3)', 
                 border: '1px solid #1e293b' 
             }}>
-                {/* Alerta de Error - Modo Oscuro */}
                 {error && (
                     <div style={{ 
                         background: 'rgba(239, 68, 68, 0.15)', 
@@ -258,7 +267,6 @@ const ProveedorEditar = ({ id, navegar }) => {
                     </div>
                 )}
 
-                {/* Alerta de Éxito - Modo Oscuro */}
                 {exito && (
                     <div style={{ 
                         background: 'rgba(16, 185, 129, 0.15)', 
@@ -284,7 +292,6 @@ const ProveedorEditar = ({ id, navegar }) => {
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '28px', marginBottom: '35px' }}>
                         
-                        {/* Nombre del Proveedor - Modo Oscuro */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Nombre de la Empresa o Proveedor <span style={{ color: '#ef4444' }}>*</span>
@@ -331,7 +338,6 @@ const ProveedorEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Email - Modo Oscuro */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Correo Electrónico
@@ -373,7 +379,6 @@ const ProveedorEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Teléfono - Modo Oscuro */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Teléfono de Contacto
@@ -415,7 +420,6 @@ const ProveedorEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Dirección - Modo Oscuro */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Dirección Física
@@ -459,7 +463,6 @@ const ProveedorEditar = ({ id, navegar }) => {
 
                     </div>
 
-                    {/* Botones de Acción Inferiores - Modo Oscuro */}
                     <div style={{ 
                         display: 'flex', 
                         justifyContent: 'flex-end', 

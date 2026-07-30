@@ -232,6 +232,8 @@ export const apiService = {
         });
         return handleResponse(response);
     },
+
+    
 crearProveedor: async (proveedor) => {
     console.log('📦 Creando proveedor:', proveedor);
     const response = await fetch(API_URL + 'proveedores', {

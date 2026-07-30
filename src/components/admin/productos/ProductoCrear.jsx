@@ -1,22 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { apiService } from '../../../services/apiService';
-import { Save, ArrowLeft, Truck, Mail, Phone, MapPin, Loader2, AlertCircle, CheckCircle2, ShieldCheck, Building } from 'lucide-react';
+import { Save, ArrowLeft, Image, Package, AlertCircle, CheckCircle2, Loader2, Sparkles, DollarSign, Layers, Truck, ShieldCheck } from 'lucide-react';
 
-const ProveedorCrear = ({ navegar }) => {
+const ProductoCrear = ({ navegar }) => {
+    const [categorias, setCategorias] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
+    const [carga, setCarga] = useState(true);
     const [guardando, setGuardando] = useState(false);
     const [error, setError] = useState('');
     const [exito, setExito] = useState(false);
+    const [imagenPreview, setImagenPreview] = useState('');
     
     const [formData, setFormData] = useState({
         nombre: '',
-        email: '',
-        telefono: '',
-        direccion: ''
+        descripcion: '',
+        precio: '',
+        stock: '',
+        imagenUrl: '',
+        categoriaId: '',
+        proveedorId: ''
     });
+
+    useEffect(() => {
+        const cargarDatos = async () => {
+            try {
+                const [cat, prov] = await Promise.all([
+                    apiService.getCategorias(),
+                    apiService.getProveedores()
+                ]);
+                console.log('📂 Categorías:', cat);
+                console.log('🚚 Proveedores:', prov);
+                setCategorias(cat || []);
+                setProveedores(prov || []);
+            } catch (err) {
+                console.error('❌ Error cargando datos:', err);
+                setError('Error cargando datos iniciales: ' + (err.message || 'Intente de nuevo.'));
+            } finally {
+                setCarga(false);
+            }
+        };
+        cargarDatos();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
         if (error) setError('');
+    };
+
+    const handleImageChange = (e) => {
+        const url = e.target.value;
+        setFormData({ ...formData, imagenUrl: url });
+        setImagenPreview(url);
     };
 
     const handleSubmit = async (e) => {
@@ -25,45 +59,94 @@ const ProveedorCrear = ({ navegar }) => {
         setExito(false);
 
         if (!formData.nombre.trim()) {
-            setError('El nombre del proveedor es obligatorio.');
+            setError('El nombre del producto es obligatorio.');
             return;
         }
 
-        if (formData.nombre.trim().length < 3) {
-            setError('El nombre debe tener al menos 3 caracteres.');
+        if (!formData.categoriaId) {
+            setError('Debes seleccionar una categoría válida.');
             return;
         }
 
-        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            setError('Ingresa un correo electrónico válido.');
+        if (!formData.proveedorId) {
+            setError('Debes seleccionar un proveedor válido.');
+            return;
+        }
+
+        if (!formData.precio || parseFloat(formData.precio) < 0) {
+            setError('Ingresa un precio válido para el producto.');
+            return;
+        }
+
+        if (!formData.stock || parseInt(formData.stock) < 0) {
+            setError('Ingresa una cantidad de stock válida.');
             return;
         }
 
         setGuardando(true);
 
         try {
-            // ✅ Enviar los datos correctamente
-            const proveedorData = {
+            const productoData = {
                 nombre: formData.nombre.trim(),
-                email: formData.email.trim(),
-                telefono: formData.telefono.trim(),
-                direccion: formData.direccion.trim()
+                descripcion: formData.descripcion.trim(),
+                precio: parseFloat(formData.precio),
+                stock: parseInt(formData.stock),
+                imagenUrl: formData.imagenUrl.trim() || '',
+                categoriaId: parseInt(formData.categoriaId),
+                proveedorId: parseInt(formData.proveedorId)
             };
             
-            console.log('📦 Enviando proveedor:', proveedorData);
-            await apiService.crearProveedor(proveedorData);
+            console.log('📦 Enviando producto:', productoData);
+            const response = await apiService.crearProducto(productoData);
+            console.log('📦 Respuesta del servidor:', response);
             
             setExito(true);
             setTimeout(() => {
-                navegar('proveedores', 'list');
+                navegar('productos', 'list');
             }, 1400);
         } catch (err) {
-            console.error('❌ Error al crear proveedor:', err);
-            setError('Error al crear el proveedor: ' + (err.message || 'Intente de nuevo.'));
+            console.error('❌ Error al crear producto:', err);
+            setError('Error al crear el producto: ' + (err.message || 'Intente de nuevo.'));
         } finally {
             setGuardando(false);
         }
     };
+
+    if (carga) {
+        return (
+            <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                height: '384px', 
+                gap: '16px', 
+                fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                background: '#0f172a'
+            }}>
+                <div style={{ 
+                    width: '64px', 
+                    height: '64px', 
+                    borderRadius: '24px', 
+                    background: '#1e293b', 
+                    border: '1px solid #334155', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    color: '#818cf8', 
+                    boxShadow: '0 10px 25px -5px rgba(79, 70, 229, 0.3)' 
+                }}>
+                    <Loader2 style={{ width: '32px', height: '32px', animation: 'spin 1s linear infinite' }} />
+                </div>
+                <p style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: '#64748b', margin: 0 }}>
+                    Cargando catálogos y formularios...
+                </p>
+                <style>{`
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                `}</style>
+            </div>
+        );
+    }
 
     return (
         <div style={{ 
@@ -79,6 +162,7 @@ const ProveedorCrear = ({ navegar }) => {
             paddingRight: '24px',
             boxSizing: 'border-box'
         }}>
+            {/* Header */}
             <div style={{ 
                 background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', 
                 borderRadius: '28px', 
@@ -109,7 +193,7 @@ const ProveedorCrear = ({ navegar }) => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '24px', zIndex: 1 }}>
                     <button
                         type="button"
-                        onClick={() => navegar('proveedores', 'list')}
+                        onClick={() => navegar('productos', 'list')}
                         style={{
                             background: 'rgba(255, 255, 255, 0.1)',
                             border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -142,7 +226,7 @@ const ProveedorCrear = ({ navegar }) => {
                             border: '2px solid rgba(255, 255, 255, 0.2)',
                             boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)'
                         }}>
-                            <Truck style={{ width: '34px', height: '34px', color: 'white' }} />
+                            <Package style={{ width: '34px', height: '34px', color: 'white' }} />
                         </div>
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -157,11 +241,11 @@ const ProveedorCrear = ({ navegar }) => {
                                     textTransform: 'uppercase',
                                     letterSpacing: '1px'
                                 }}>
-                                    Gestión de Proveedores
+                                    Catálogo de Productos
                                 </span>
                             </div>
                             <h1 style={{ fontSize: '30px', fontWeight: '800', margin: '0', letterSpacing: '-0.8px', color: '#ffffff' }}>
-                                Nuevo Proveedor
+                                Nuevo Producto
                             </h1>
                         </div>
                     </div>
@@ -173,6 +257,7 @@ const ProveedorCrear = ({ navegar }) => {
                 </div>
             </div>
 
+            {/* Formulario */}
             <div style={{ 
                 background: '#0f172a', 
                 borderRadius: '28px', 
@@ -220,7 +305,7 @@ const ProveedorCrear = ({ navegar }) => {
                         <div style={{ background: '#10b981', color: 'white', padding: '8px', borderRadius: '10px', display: 'flex' }}>
                             <CheckCircle2 style={{ width: '18px', height: '18px' }} />
                         </div>
-                        <span>¡Proveedor registrado exitosamente! Redirigiendo al panel...</span>
+                        <span>¡Producto registrado exitosamente! Redirigiendo al panel...</span>
                     </div>
                 )}
 
@@ -229,105 +314,19 @@ const ProveedorCrear = ({ navegar }) => {
                         
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
-                                Nombre de la Empresa o Proveedor <span style={{ color: '#ef4444' }}>*</span>
+                                Nombre del Producto <span style={{ color: '#ef4444' }}>*</span>
                             </label>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
-                                    <Building style={{ width: '20px', height: '20px' }} />
+                                    <Sparkles style={{ width: '20px', height: '20px' }} />
                                 </span>
                                 <input
                                     type="text"
                                     name="nombre"
                                     required
-                                    maxLength={100}
                                     value={formData.nombre}
                                     onChange={handleChange}
-                                    placeholder="Ej: Distribuciones del Norte, Suministros SA..."
-                                    style={{
-                                        width: '100%',
-                                        padding: '16px 18px 16px 52px',
-                                        borderRadius: '16px',
-                                        border: '1.5px solid #1e293b',
-                                        background: '#0f172a',
-                                        fontSize: '14px',
-                                        fontWeight: '500',
-                                        color: '#f1f5f9',
-                                        outline: 'none',
-                                        transition: 'all 0.2s ease',
-                                        boxSizing: 'border-box'
-                                    }}
-                                    onFocus={(e) => {
-                                        e.target.style.borderColor = '#4f46e5';
-                                        e.target.style.background = '#1a1a2e';
-                                        e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
-                                    }}
-                                    onBlur={(e) => {
-                                        e.target.style.borderColor = '#1e293b';
-                                        e.target.style.background = '#0f172a';
-                                        e.target.style.boxShadow = 'none';
-                                    }}
-                                />
-                            </div>
-                            <div style={{ marginTop: '6px', fontSize: '11px', color: '#64748b', fontWeight: '500', textAlign: 'right' }}>
-                                {formData.nombre.length}/100 caracteres
-                            </div>
-                        </div>
-
-                        <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
-                                Correo Electrónico
-                            </label>
-                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
-                                    <Mail style={{ width: '20px', height: '20px' }} />
-                                </span>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    placeholder="contacto@proveedor.com"
-                                    style={{
-                                        width: '100%',
-                                        padding: '16px 18px 16px 52px',
-                                        borderRadius: '16px',
-                                        border: '1.5px solid #1e293b',
-                                        background: '#0f172a',
-                                        fontSize: '14px',
-                                        fontWeight: '500',
-                                        color: '#f1f5f9',
-                                        outline: 'none',
-                                        transition: 'all 0.2s ease',
-                                        boxSizing: 'border-box'
-                                    }}
-                                    onFocus={(e) => {
-                                        e.target.style.borderColor = '#4f46e5';
-                                        e.target.style.background = '#1a1a2e';
-                                        e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
-                                    }}
-                                    onBlur={(e) => {
-                                        e.target.style.borderColor = '#1e293b';
-                                        e.target.style.background = '#0f172a';
-                                        e.target.style.boxShadow = 'none';
-                                    }}
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
-                                Teléfono de Contacto
-                            </label>
-                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
-                                    <Phone style={{ width: '20px', height: '20px' }} />
-                                </span>
-                                <input
-                                    type="text"
-                                    name="telefono"
-                                    value={formData.telefono}
-                                    onChange={handleChange}
-                                    placeholder="7471234567"
+                                    placeholder="Ej: Laptop Gamer Pro, Silla Ergonómica..."
                                     style={{
                                         width: '100%',
                                         padding: '16px 18px 16px 52px',
@@ -357,18 +356,59 @@ const ProveedorCrear = ({ navegar }) => {
 
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
-                                Dirección Física
+                                Descripción del Producto
+                            </label>
+                            <textarea
+                                name="descripcion"
+                                rows="3"
+                                value={formData.descripcion}
+                                onChange={handleChange}
+                                placeholder="Detalles generales, especificaciones o características..."
+                                style={{
+                                    width: '100%',
+                                    padding: '16px 18px',
+                                    borderRadius: '16px',
+                                    border: '1.5px solid #1e293b',
+                                    background: '#0f172a',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    color: '#f1f5f9',
+                                    outline: 'none',
+                                    transition: 'all 0.2s ease',
+                                    boxSizing: 'border-box',
+                                    resize: 'none',
+                                    fontFamily: 'inherit'
+                                }}
+                                onFocus={(e) => {
+                                    e.target.style.borderColor = '#4f46e5';
+                                    e.target.style.background = '#1a1a2e';
+                                    e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = '#1e293b';
+                                    e.target.style.background = '#0f172a';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                Precio Unitario <span style={{ color: '#ef4444' }}>*</span>
                             </label>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
-                                    <MapPin style={{ width: '20px', height: '20px' }} />
+                                    <DollarSign style={{ width: '20px', height: '20px' }} />
                                 </span>
                                 <input
-                                    type="text"
-                                    name="direccion"
-                                    value={formData.direccion}
+                                    type="number"
+                                    name="precio"
+                                    required
+                                    step="0.01"
+                                    min="0"
+                                    value={formData.precio}
                                     onChange={handleChange}
-                                    placeholder="Calle Principal #123, Colonia Centro, Ciudad"
+                                    placeholder="0.00"
                                     style={{
                                         width: '100%',
                                         padding: '16px 18px 16px 52px',
@@ -393,6 +433,198 @@ const ProveedorCrear = ({ navegar }) => {
                                         e.target.style.boxShadow = 'none';
                                     }}
                                 />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                Inventario (Stock) <span style={{ color: '#ef4444' }}>*</span>
+                            </label>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
+                                    <Package style={{ width: '20px', height: '20px' }} />
+                                </span>
+                                <input
+                                    type="number"
+                                    name="stock"
+                                    required
+                                    min="0"
+                                    value={formData.stock}
+                                    onChange={handleChange}
+                                    placeholder="0"
+                                    style={{
+                                        width: '100%',
+                                        padding: '16px 18px 16px 52px',
+                                        borderRadius: '16px',
+                                        border: '1.5px solid #1e293b',
+                                        background: '#0f172a',
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: '#f1f5f9',
+                                        outline: 'none',
+                                        transition: 'all 0.2s ease',
+                                        boxSizing: 'border-box'
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = '#4f46e5';
+                                        e.target.style.background = '#1a1a2e';
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = '#1e293b';
+                                        e.target.style.background = '#0f172a';
+                                        e.target.style.boxShadow = 'none';
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ gridColumn: '1 / -1' }}>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                URL de la Imagen
+                            </label>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
+                                    <Image style={{ width: '20px', height: '20px' }} />
+                                </span>
+                                <input
+                                    type="text"
+                                    name="imagenUrl"
+                                    value={formData.imagenUrl}
+                                    onChange={handleImageChange}
+                                    placeholder="https://ejemplo.com/imagen.jpg"
+                                    style={{
+                                        width: '100%',
+                                        padding: '16px 18px 16px 52px',
+                                        borderRadius: '16px',
+                                        border: '1.5px solid #1e293b',
+                                        background: '#0f172a',
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: '#f1f5f9',
+                                        outline: 'none',
+                                        transition: 'all 0.2s ease',
+                                        boxSizing: 'border-box'
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = '#4f46e5';
+                                        e.target.style.background = '#1a1a2e';
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = '#1e293b';
+                                        e.target.style.background = '#0f172a';
+                                        e.target.style.boxShadow = 'none';
+                                    }}
+                                />
+                            </div>
+                            {imagenPreview && (
+                                <div style={{ marginTop: '12px', padding: '12px 16px', background: '#0f172a', borderRadius: '16px', border: '1.5px solid #1e293b', display: 'inline-flex', alignItems: 'center', gap: '16px' }}>
+                                    <img 
+                                        src={imagenPreview} 
+                                        alt="Vista previa" 
+                                        style={{ width: '56px', height: '56px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #1e293b' }}
+                                        onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=Error+Imagen'; }} 
+                                    />
+                                    <div>
+                                        <span style={{ fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#818cf8', display: 'block', marginBottom: '2px' }}>Previsualización activa</span>
+                                        <p style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', margin: 0, maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{imagenPreview}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                Categoría <span style={{ color: '#ef4444' }}>*</span>
+                            </label>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none', zIndex: 2 }}>
+                                    <Layers style={{ width: '20px', height: '20px' }} />
+                                </span>
+                                <select
+                                    required
+                                    name="categoriaId"
+                                    value={formData.categoriaId}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '16px 18px 16px 52px',
+                                        borderRadius: '16px',
+                                        border: '1.5px solid #1e293b',
+                                        background: '#0f172a',
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: '#f1f5f9',
+                                        outline: 'none',
+                                        transition: 'all 0.2s ease',
+                                        boxSizing: 'border-box',
+                                        appearance: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = '#4f46e5';
+                                        e.target.style.background = '#1a1a2e';
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = '#1e293b';
+                                        e.target.style.background = '#0f172a';
+                                        e.target.style.boxShadow = 'none';
+                                    }}
+                                >
+                                    <option value="" style={{ background: '#0f172a', color: '#94a3b8' }}>Seleccionar categoría</option>
+                                    {categorias.map(cat => (
+                                        <option key={cat.id} value={cat.id} style={{ background: '#0f172a', color: '#f1f5f9' }}>{cat.nombre}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                Proveedor <span style={{ color: '#ef4444' }}>*</span>
+                            </label>
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none', zIndex: 2 }}>
+                                    <Truck style={{ width: '20px', height: '20px' }} />
+                                </span>
+                                <select
+                                    required
+                                    name="proveedorId"
+                                    value={formData.proveedorId}
+                                    onChange={handleChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '16px 18px 16px 52px',
+                                        borderRadius: '16px',
+                                        border: '1.5px solid #1e293b',
+                                        background: '#0f172a',
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: '#f1f5f9',
+                                        outline: 'none',
+                                        transition: 'all 0.2s ease',
+                                        boxSizing: 'border-box',
+                                        appearance: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = '#4f46e5';
+                                        e.target.style.background = '#1a1a2e';
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = '#1e293b';
+                                        e.target.style.background = '#0f172a';
+                                        e.target.style.boxShadow = 'none';
+                                    }}
+                                >
+                                    <option value="" style={{ background: '#0f172a', color: '#94a3b8' }}>Seleccionar proveedor</option>
+                                    {proveedores.map(prov => (
+                                        <option key={prov.id} value={prov.id} style={{ background: '#0f172a', color: '#f1f5f9' }}>{prov.nombre}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
 
@@ -408,7 +640,7 @@ const ProveedorCrear = ({ navegar }) => {
                     }}>
                         <button
                             type="button"
-                            onClick={() => navegar('proveedores', 'list')}
+                            onClick={() => navegar('productos', 'list')}
                             style={{
                                 padding: '15px 28px',
                                 background: '#1e293b',
@@ -475,7 +707,7 @@ const ProveedorCrear = ({ navegar }) => {
                             ) : (
                                 <>
                                     <Save style={{ width: '18px', height: '18px', strokeWidth: 2.5 }} />
-                                    <span>Guardar Proveedor</span>
+                                    <span>Guardar Producto</span>
                                 </>
                             )}
                         </button>
@@ -486,4 +718,4 @@ const ProveedorCrear = ({ navegar }) => {
     );
 };
 
-export default ProveedorCrear;
+export default ProductoCrear;

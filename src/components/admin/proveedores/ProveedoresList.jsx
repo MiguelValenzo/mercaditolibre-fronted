@@ -162,35 +162,40 @@ const ProveedoresList = ({ navegar }) => {
                         <ShieldCheck style={{ width: '20px', height: '20px', color: '#34d399' }} />
                         <span style={{ fontSize: '12px', fontWeight: '600', color: '#e2e8f0' }}>Control Activo</span>
                     </div>
-                    <button
-                        onClick={() => navegar('proveedores', 'crear')}
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: '14px 24px',
-                            borderRadius: '16px',
-                            background: '#1e293b',
-                            border: '1px solid #334155',
-                            color: '#f1f5f9',
-                            fontSize: '14px',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.3)',
-                            transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background = '#2d3748';
-                            e.currentTarget.style.borderColor = '#4f46e5';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background = '#1e293b';
-                            e.currentTarget.style.borderColor = '#334155';
-                        }}
-                    >
-                        <Plus style={{ width: '18px', height: '18px', strokeWidth: 3 }} />
-                        Nuevo Proveedor
-                    </button>
+           
+// Busca el botón "Nuevo Proveedor" y asegúrate de que sea:
+<button
+    onClick={() => navegar('proveedores', 'crear')}
+    style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        padding: '14px 24px',
+        borderRadius: '16px',
+        background: '#1e293b',
+        border: '1px solid #334155',
+        color: '#f1f5f9',
+        fontSize: '14px',
+        fontWeight: '700',
+        cursor: 'pointer',
+        boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.3)',
+        transition: 'all 0.2s ease'
+    }}
+    onMouseEnter={(e) => {
+        e.currentTarget.style.background = '#2d3748';
+        e.currentTarget.style.borderColor = '#4f46e5';
+    }}
+    onMouseLeave={(e) => {
+        e.currentTarget.style.background = '#1e293b';
+        e.currentTarget.style.borderColor = '#334155';
+    }}
+>
+    <Plus style={{ width: '18px', height: '18px', strokeWidth: 3 }} />
+    Nuevo Proveedor
+</button>
+
+
+
                 </div>
             </div>
 

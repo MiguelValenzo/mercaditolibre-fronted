@@ -42,17 +42,23 @@ const ProveedorCrear = ({ navegar }) => {
         setGuardando(true);
 
         try {
-            // Si tienes API real, descomenta:
-            // await apiService.crearProveedor(formData);
+            const proveedorData = {
+                nombre: formData.nombre.trim(),
+                email: formData.email.trim(),
+                telefono: formData.telefono.trim(),
+                direccion: formData.direccion.trim()
+            };
             
-            // Simulación de guardado
-            await new Promise(resolve => setTimeout(resolve, 1200));
+            console.log('🚚 Enviando proveedor:', proveedorData);
+            const response = await apiService.crearProveedor(proveedorData);
+            console.log('🚚 Respuesta del servidor:', response);
             
             setExito(true);
             setTimeout(() => {
                 navegar('proveedores', 'list');
             }, 1400);
         } catch (err) {
+            console.error('❌ Error al crear proveedor:', err);
             setError('Error al crear el proveedor: ' + (err.message || 'Intente de nuevo.'));
         } finally {
             setGuardando(false);
@@ -73,7 +79,7 @@ const ProveedorCrear = ({ navegar }) => {
             paddingRight: '24px',
             boxSizing: 'border-box'
         }}>
-            {/* Header Superior Estilizado */}
+            {/* Header */}
             <div style={{ 
                 background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', 
                 borderRadius: '28px', 
@@ -90,7 +96,6 @@ const ProveedorCrear = ({ navegar }) => {
                 flexWrap: 'wrap',
                 gap: '16px'
             }}>
-                {/* Elemento decorativo de fondo */}
                 <div style={{
                     position: 'absolute',
                     right: '-30px',
@@ -169,7 +174,7 @@ const ProveedorCrear = ({ navegar }) => {
                 </div>
             </div>
 
-            {/* Tarjeta Contenedora del Formulario - Modo Oscuro */}
+            {/* Formulario */}
             <div style={{ 
                 background: '#0f172a', 
                 borderRadius: '28px', 
@@ -177,7 +182,6 @@ const ProveedorCrear = ({ navegar }) => {
                 boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.3)', 
                 border: '1px solid #1e293b' 
             }}>
-                {/* Alerta de Error - Modo Oscuro */}
                 {error && (
                     <div style={{ 
                         background: 'rgba(239, 68, 68, 0.15)', 
@@ -200,7 +204,6 @@ const ProveedorCrear = ({ navegar }) => {
                     </div>
                 )}
 
-                {/* Alerta de Éxito - Modo Oscuro */}
                 {exito && (
                     <div style={{ 
                         background: 'rgba(16, 185, 129, 0.15)', 
@@ -226,7 +229,6 @@ const ProveedorCrear = ({ navegar }) => {
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '28px', marginBottom: '35px' }}>
                         
-                        {/* Nombre del Proveedor - Modo Oscuro */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Nombre de la Empresa o Proveedor <span style={{ color: '#ef4444' }}>*</span>
@@ -273,7 +275,6 @@ const ProveedorCrear = ({ navegar }) => {
                             </div>
                         </div>
 
-                        {/* Email - Modo Oscuro */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Correo Electrónico
@@ -315,7 +316,6 @@ const ProveedorCrear = ({ navegar }) => {
                             </div>
                         </div>
 
-                        {/* Teléfono - Modo Oscuro */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Teléfono de Contacto
@@ -357,7 +357,6 @@ const ProveedorCrear = ({ navegar }) => {
                             </div>
                         </div>
 
-                        {/* Dirección - Modo Oscuro */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Dirección Física
@@ -401,7 +400,6 @@ const ProveedorCrear = ({ navegar }) => {
 
                     </div>
 
-                    {/* Botones de Acción Inferiores - Modo Oscuro */}
                     <div style={{ 
                         display: 'flex', 
                         justifyContent: 'flex-end', 

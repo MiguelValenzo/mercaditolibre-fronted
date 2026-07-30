@@ -94,7 +94,7 @@ const ProductosList = ({ navegar }) => {
             paddingRight: '24px',
             boxSizing: 'border-box'
         }}>
-            {/* Header Superior Estilizado */}
+            {/* Header */}
             <div style={{ 
                 background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', 
                 borderRadius: '28px', 
@@ -198,7 +198,7 @@ const ProductosList = ({ navegar }) => {
                 </div>
             </div>
 
-            {/* Alerta de Error - Modo Oscuro */}
+            {/* Alerta de Error */}
             {error && (
                 <div style={{ 
                     background: 'rgba(239, 68, 68, 0.15)', 
@@ -221,7 +221,7 @@ const ProductosList = ({ navegar }) => {
                 </div>
             )}
 
-            {/* Buscador Refinado - Modo Oscuro */}
+            {/* Buscador */}
             <div style={{ 
                 background: '#1e293b', 
                 borderRadius: '24px', 
@@ -253,9 +253,9 @@ const ProductosList = ({ navegar }) => {
                             boxSizing: 'border-box'
                         }}
                         onFocus={(e) => {
-                            e.target.style.borderColor = '#6366f1';
+                            e.target.style.borderColor = '#4f46e5';
                             e.target.style.background = '#1a1a2e';
-                            e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.15)';
+                            e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
                         }}
                         onBlur={(e) => {
                             e.target.style.borderColor = '#334155';
@@ -266,7 +266,7 @@ const ProductosList = ({ navegar }) => {
                 </div>
             </div>
 
-            {/* Tabla Principal Contenedora - Modo Oscuro */}
+            {/* Tabla */}
             <div style={{ 
                 background: '#1e293b', 
                 borderRadius: '28px', 
@@ -309,7 +309,6 @@ const ProductosList = ({ navegar }) => {
                                         </div>
                                     </td>
                                     <td style={{ padding: '20px 24px' }}>
-                                        {/* ✅ CATEGORÍA CORREGIDA - Con verificación de seguridad */}
                                         <span style={{ 
                                             padding: '6px 12px', 
                                             background: 'rgba(79, 70, 229, 0.15)', 

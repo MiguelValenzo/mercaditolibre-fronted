@@ -135,7 +135,10 @@ const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
                     return (
                         <button
                             key={item.id}
-                            onClick={() => setSeccionActual(item.id)}
+                            onClick={() => {
+                                console.log('🔄 Click en menú:', item.id);
+                                setSeccionActual(item.id);
+                            }}
                             style={{
                                 width: '100%',
                                 display: 'flex',
@@ -283,7 +286,6 @@ const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
                 </div>
             </div>
 
-            {/* Animación de pulso */}
             <style>{`
                 @keyframes pulse {
                     0%, 100% { opacity: 1; transform: scale(1); }

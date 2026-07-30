@@ -17,19 +17,15 @@ const CategoriaEditar = ({ id, navegar }) => {
     useEffect(() => {
         const cargarDatos = async () => {
             try {
-                await new Promise(resolve => setTimeout(resolve, 800));
-                const data = {
-                    nombre: 'Electrónica',
-                    descripcion: 'Productos electrónicos y tecnología',
-                    estado: 'Activo'
-                };
-                
+                const data = await apiService.getCategoria(id);
+                console.log('📂 Categoría cargada:', data);
                 setFormData({
                     nombre: data.nombre || '',
                     descripcion: data.descripcion || '',
                     estado: data.estado || 'Activo'
                 });
             } catch (err) {
+                console.error('❌ Error cargando categoría:', err);
                 setError('Error cargando los datos para la edición: ' + (err.message || 'Intente de nuevo.'));
             } finally {
                 setCarga(false);
@@ -67,12 +63,21 @@ const CategoriaEditar = ({ id, navegar }) => {
         setGuardando(true);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1200));
+            const categoriaData = {
+                nombre: formData.nombre.trim(),
+                descripcion: formData.descripcion.trim(),
+                estado: formData.estado
+            };
+            
+            console.log('📂 Actualizando categoría:', id, categoriaData);
+            await apiService.actualizarCategoria(id, categoriaData);
+            
             setExito(true);
             setTimeout(() => {
                 navegar('categorias', 'list');
             }, 1400);
         } catch (err) {
+            console.error('❌ Error al actualizar categoría:', err);
             setError('Error al actualizar la categoría: ' + (err.message || 'Intente de nuevo.'));
         } finally {
             setGuardando(false);
@@ -124,9 +129,12 @@ const CategoriaEditar = ({ id, navegar }) => {
             fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
             background: '#0f172a',
             minHeight: '100vh',
-            paddingTop: '24px'
+            paddingTop: '24px',
+            paddingLeft: '24px',
+            paddingRight: '24px',
+            boxSizing: 'border-box'
         }}>
-            {/* Header Superior Estilizado */}
+            {/* Header */}
             <div style={{ 
                 background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', 
                 borderRadius: '28px', 
@@ -221,7 +229,7 @@ const CategoriaEditar = ({ id, navegar }) => {
                 </div>
             </div>
 
-            {/* Tarjeta Contenedora del Formulario - TODO NEGRO */}
+            {/* Formulario */}
             <div style={{ 
                 background: '#0f172a', 
                 borderRadius: '28px', 
@@ -229,7 +237,6 @@ const CategoriaEditar = ({ id, navegar }) => {
                 boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.3)', 
                 border: '1px solid #1e293b' 
             }}>
-                {/* Alerta de Error */}
                 {error && (
                     <div style={{ 
                         background: 'rgba(239, 68, 68, 0.15)', 
@@ -251,7 +258,6 @@ const CategoriaEditar = ({ id, navegar }) => {
                     </div>
                 )}
 
-                {/* Alerta de Éxito */}
                 {exito && (
                     <div style={{ 
                         background: 'rgba(16, 185, 129, 0.15)', 
@@ -276,7 +282,6 @@ const CategoriaEditar = ({ id, navegar }) => {
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '28px', marginBottom: '35px' }}>
                         
-                        {/* Nombre de la Categoría - TODO NEGRO */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Nombre de la Categoría <span style={{ color: '#ef4444' }}>*</span>
@@ -323,7 +328,6 @@ const CategoriaEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Descripción de la Categoría - TODO NEGRO */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Descripción
@@ -368,7 +372,6 @@ const CategoriaEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Estado de la Categoría - TODO NEGRO */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Estado
@@ -419,7 +422,6 @@ const CategoriaEditar = ({ id, navegar }) => {
 
                     </div>
 
-                    {/* Botones de Acción Inferiores - TODO NEGRO */}
                     <div style={{ 
                         display: 'flex', 
                         justifyContent: 'flex-end', 

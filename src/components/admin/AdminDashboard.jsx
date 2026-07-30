@@ -267,7 +267,7 @@ const AdminDashboard = () => {
                 maxWidth: '1320px',
                 margin: '0 auto'
             }}>
-                {/* Header Superior Estilizado - Modo Oscuro */}
+                {/* Header */}
                 <div style={{
                     background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
                     borderRadius: '28px',
@@ -380,7 +380,7 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {/* Tarjetas de Estadísticas - Modo Oscuro */}
+                {/* Tarjetas de Estadísticas */}
                 <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -484,7 +484,7 @@ const AdminDashboard = () => {
                     })}
                 </div>
 
-                {/* Pie de página informativo - Modo Oscuro */}
+                {/* Pie de página informativo */}
                 <div style={{
                     marginTop: '32px',
                     padding: '20px 24px',

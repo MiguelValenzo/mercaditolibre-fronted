@@ -17,8 +17,8 @@ const ProductoEditar = ({ productoId, navegar }) => {
         precio: '',
         stock: '',
         imagenUrl: '',
-        categoria: { id: '' },
-        proveedor: { id: '' }
+        categoriaId: '',
+        proveedorId: ''
     });
 
     useEffect(() => {
@@ -27,8 +27,12 @@ const ProductoEditar = ({ productoId, navegar }) => {
                 const [cat, prov, productoData] = await Promise.all([
                     apiService.getCategorias(),
                     apiService.getProveedores(),
-                    apiService.getProducto(productoId)  // ✅ CORREGIDO: usar getProducto
+                    apiService.getProducto(productoId)
                 ]);
+                
+                console.log('📂 Categorías:', cat);
+                console.log('🚚 Proveedores:', prov);
+                console.log('📦 Producto a editar:', productoData);
                 
                 setCategorias(cat || []);
                 setProveedores(prov || []);
@@ -40,8 +44,8 @@ const ProductoEditar = ({ productoId, navegar }) => {
                         precio: productoData.precio !== undefined ? productoData.precio : '',
                         stock: productoData.stock !== undefined ? productoData.stock : '',
                         imagenUrl: productoData.imagenUrl || '',
-                        categoria: { id: productoData.categoria?.id || '' },
-                        proveedor: { id: productoData.proveedor?.id || '' }
+                        categoriaId: productoData.categoria?.id || '',
+                        proveedorId: productoData.proveedor?.id || ''
                     });
                     if (productoData.imagenUrl) {
                         setImagenPreview(productoData.imagenUrl);
@@ -79,20 +83,17 @@ const ProductoEditar = ({ productoId, navegar }) => {
         setError('');
         setExito(false);
 
-        const categoriaId = parseInt(formData.categoria.id);
-        const proveedorId = parseInt(formData.proveedor.id);
-
         if (!formData.nombre.trim()) {
             setError('El nombre del producto es obligatorio.');
             return;
         }
 
-        if (!categoriaId || isNaN(categoriaId)) {
+        if (!formData.categoriaId) {
             setError('Debes seleccionar una categoría válida.');
             return;
         }
 
-        if (!proveedorId || isNaN(proveedorId)) {
+        if (!formData.proveedorId) {
             setError('Debes seleccionar un proveedor válido.');
             return;
         }
@@ -116,10 +117,11 @@ const ProductoEditar = ({ productoId, navegar }) => {
                 precio: parseFloat(formData.precio),
                 stock: parseInt(formData.stock),
                 imagenUrl: formData.imagenUrl.trim() || '',
-                categoriaId: categoriaId,
-                proveedorId: proveedorId
+                categoriaId: parseInt(formData.categoriaId),
+                proveedorId: parseInt(formData.proveedorId)
             };
             
+            console.log('📦 Actualizando producto:', productoId, productoData);
             await apiService.actualizarProducto(productoId, productoData);
             
             setExito(true);
@@ -127,6 +129,7 @@ const ProductoEditar = ({ productoId, navegar }) => {
                 navegar('productos', 'list');
             }, 1400);
         } catch (err) {
+            console.error('❌ Error al actualizar producto:', err);
             setError('Error al actualizar el producto: ' + (err.message || 'Intente de nuevo.'));
         } finally {
             setGuardando(false);
@@ -183,7 +186,7 @@ const ProductoEditar = ({ productoId, navegar }) => {
             paddingRight: '24px',
             boxSizing: 'border-box'
         }}>
-            {/* Header Superior Estilizado */}
+            {/* Header */}
             <div style={{ 
                 background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', 
                 borderRadius: '28px', 
@@ -278,7 +281,7 @@ const ProductoEditar = ({ productoId, navegar }) => {
                 </div>
             </div>
 
-            {/* Tarjeta Contenedora del Formulario - Modo Oscuro */}
+            {/* Formulario */}
             <div style={{ 
                 background: '#0f172a', 
                 borderRadius: '28px', 
@@ -286,7 +289,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                 boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.3)', 
                 border: '1px solid #1e293b' 
             }}>
-                {/* Alerta de Error - Modo Oscuro */}
                 {error && (
                     <div style={{ 
                         background: 'rgba(239, 68, 68, 0.15)', 
@@ -309,7 +311,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                     </div>
                 )}
 
-                {/* Alerta de Éxito - Modo Oscuro */}
                 {exito && (
                     <div style={{ 
                         background: 'rgba(16, 185, 129, 0.15)', 
@@ -335,7 +336,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '28px', marginBottom: '35px' }}>
                         
-                        {/* Nombre del Producto - Modo Oscuro */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Nombre del Producto <span style={{ color: '#ef4444' }}>*</span>
@@ -378,7 +378,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Descripción del Producto - Modo Oscuro */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Descripción del Producto
@@ -417,7 +416,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                             />
                         </div>
 
-                        {/* Precio Unitario - Modo Oscuro */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Precio Unitario <span style={{ color: '#ef4444' }}>*</span>
@@ -462,7 +460,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Inventario (Stock) - Modo Oscuro */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Inventario (Stock) <span style={{ color: '#ef4444' }}>*</span>
@@ -506,7 +503,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                             </div>
                         </div>
 
-                        {/* URL de la Imagen - Modo Oscuro */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 URL de la Imagen
@@ -562,7 +558,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                             )}
                         </div>
 
-                        {/* Categoría - Modo Oscuro */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Categoría <span style={{ color: '#ef4444' }}>*</span>
@@ -573,14 +568,9 @@ const ProductoEditar = ({ productoId, navegar }) => {
                                 </span>
                                 <select
                                     required
-                                    value={formData.categoria.id || ''}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setFormData({
-                                            ...formData,
-                                            categoria: { id: value }
-                                        });
-                                    }}
+                                    name="categoriaId"
+                                    value={formData.categoriaId}
+                                    onChange={handleChange}
                                     style={{
                                         width: '100%',
                                         padding: '16px 18px 16px 52px',
@@ -615,7 +605,6 @@ const ProductoEditar = ({ productoId, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Proveedor - Modo Oscuro */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Proveedor <span style={{ color: '#ef4444' }}>*</span>
@@ -626,14 +615,9 @@ const ProductoEditar = ({ productoId, navegar }) => {
                                 </span>
                                 <select
                                     required
-                                    value={formData.proveedor.id || ''}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setFormData({
-                                            ...formData,
-                                            proveedor: { id: value }
-                                        });
-                                    }}
+                                    name="proveedorId"
+                                    value={formData.proveedorId}
+                                    onChange={handleChange}
                                     style={{
                                         width: '100%',
                                         padding: '16px 18px 16px 52px',
@@ -670,19 +654,26 @@ const ProductoEditar = ({ productoId, navegar }) => {
 
                     </div>
 
-                    {/* Botones de Acción - Modo Oscuro */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '16px', borderTop: '1px solid #1e293b', paddingTop: '30px' }}>
+                    <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'flex-end', 
+                        alignItems: 'center', 
+                        gap: '16px', 
+                        paddingTop: '30px', 
+                        borderTop: '1px solid #1e293b' 
+                    }}>
                         <button
                             type="button"
                             onClick={() => navegar('productos', 'list')}
                             style={{
-                                padding: '14px 24px',
-                                borderRadius: '16px',
+                                padding: '15px 28px',
                                 background: '#1e293b',
-                                border: '1px solid #2d3748',
                                 color: '#94a3b8',
-                                fontSize: '14px',
+                                border: '1px solid #2d3748',
+                                borderRadius: '16px',
                                 fontWeight: '700',
+                                fontSize: '13px',
+                                textTransform: 'uppercase',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease'
                             }}
@@ -697,22 +688,24 @@ const ProductoEditar = ({ productoId, navegar }) => {
                         >
                             Cancelar
                         </button>
-
                         <button
                             type="submit"
                             disabled={guardando}
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
+                                justifyContent: 'center',
                                 gap: '10px',
-                                padding: '14px 28px',
-                                borderRadius: '16px',
-                                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                                padding: '15px 36px',
+                                background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                                color: '#ffffff',
                                 border: 'none',
-                                color: 'white',
-                                fontSize: '14px',
+                                borderRadius: '16px',
                                 fontWeight: '700',
-                                cursor: guardando ? 'not-allowed' : 'pointer',
+                                fontSize: '13px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                cursor: 'pointer',
                                 boxShadow: '0 10px 20px -5px rgba(79, 70, 229, 0.4)',
                                 opacity: guardando ? 0.7 : 1,
                                 transition: 'all 0.2s ease'
@@ -733,12 +726,12 @@ const ProductoEditar = ({ productoId, navegar }) => {
                             {guardando ? (
                                 <>
                                     <Loader2 style={{ width: '18px', height: '18px', animation: 'spin 1s linear infinite' }} />
-                                    Actualizando...
+                                    <span>Actualizando Registro...</span>
                                 </>
                             ) : (
                                 <>
-                                    <Save style={{ width: '18px', height: '18px' }} />
-                                    Actualizar Producto
+                                    <Save style={{ width: '18px', height: '18px', strokeWidth: 2.5 }} />
+                                    <span>Actualizar Producto</span>
                                 </>
                             )}
                         </button>

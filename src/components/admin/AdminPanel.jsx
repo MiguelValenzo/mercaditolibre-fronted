@@ -23,6 +23,7 @@ const AdminPanel = () => {
 
     // ✅ Función de navegación CORREGIDA
     const navegar = (seccion, sub = 'list', id = null) => {
+        console.log('🔀 Navegando a:', seccion, sub, id);
         setSeccionActual(seccion);
         setSubSeccion(sub);
         if (id) {
@@ -34,41 +35,63 @@ const AdminPanel = () => {
         }
     };
 
-    // ✅ Función para volver (opcional)
-    const volver = () => {
-        setSubSeccion('list');
-        setEditandoId(null);
-        setVerId(null);
-    };
-
     const renderSeccion = () => {
-        // Productos
+        console.log('📌 Renderizando sección:', seccionActual, subSeccion);
+        
+        // ✅ PRODUCTOS
         if (seccionActual === 'productos') {
-            if (subSeccion === 'crear') return <ProductoCrear navegar={navegar} />;
-            if (subSeccion === 'editar') return <ProductoEditar productoId={editandoId} navegar={navegar} />;
+            if (subSeccion === 'crear') {
+                console.log('📦 Mostrando ProductoCrear');
+                return <ProductoCrear navegar={navegar} />;
+            }
+            if (subSeccion === 'editar') {
+                console.log('📦 Mostrando ProductoEditar');
+                return <ProductoEditar productoId={editandoId} navegar={navegar} />;
+            }
+            console.log('📦 Mostrando ProductosList');
             return <ProductosList navegar={navegar} />;
         }
 
-        // Categorías
+        // ✅ CATEGORÍAS
         if (seccionActual === 'categorias') {
-            if (subSeccion === 'crear') return <CategoriaCrear navegar={navegar} />;
-            if (subSeccion === 'editar') return <CategoriaEditar id={editandoId} navegar={navegar} />;
+            if (subSeccion === 'crear') {
+                console.log('📂 Mostrando CategoriaCrear');
+                return <CategoriaCrear navegar={navegar} />;
+            }
+            if (subSeccion === 'editar') {
+                console.log('📂 Mostrando CategoriaEditar');
+                return <CategoriaEditar id={editandoId} navegar={navegar} />;
+            }
+            console.log('📂 Mostrando CategoriasList');
             return <CategoriasList navegar={navegar} />;
         }
 
-        // Proveedores
+        // ✅ PROVEEDORES
         if (seccionActual === 'proveedores') {
-            if (subSeccion === 'crear') return <ProveedorCrear navegar={navegar} />;
-            if (subSeccion === 'editar') return <ProveedorEditar id={editandoId} navegar={navegar} />;
+            if (subSeccion === 'crear') {
+                console.log('🚚 Mostrando ProveedorCrear');
+                return <ProveedorCrear navegar={navegar} />;
+            }
+            if (subSeccion === 'editar') {
+                console.log('🚚 Mostrando ProveedorEditar');
+                return <ProveedorEditar id={editandoId} navegar={navegar} />;
+            }
+            console.log('🚚 Mostrando ProveedoresList');
             return <ProveedoresList navegar={navegar} />;
         }
 
-        // Ventas
+        // ✅ VENTAS
         if (seccionActual === 'ventas') {
-            if (subSeccion === 'ver') return <VentaDetalle id={verId} navegar={navegar} />;
+            if (subSeccion === 'ver') {
+                console.log('💰 Mostrando VentaDetalle');
+                return <VentaDetalle id={verId} navegar={navegar} />;
+            }
+            console.log('💰 Mostrando VentasList');
             return <VentasList navegar={navegar} />;
         }
 
+        // ✅ DASHBOARD
+        console.log('📊 Mostrando AdminDashboard');
         return <AdminDashboard />;
     };
 
@@ -83,6 +106,7 @@ const AdminPanel = () => {
             <AdminSidebar 
                 seccionActual={seccionActual} 
                 setSeccionActual={(seccion) => {
+                    console.log('🔄 Cambiando sección a:', seccion);
                     setSeccionActual(seccion);
                     setSubSeccion('list');
                     setEditandoId(null);

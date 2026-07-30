@@ -23,7 +23,7 @@ const AdminHeader = () => {
                 margin: '0 auto'
             }}>
                 
-                {/* BARRA DE BÚSQUEDA - Modo Oscuro */}
+                {/* BARRA DE BÚSQUEDA */}
                 <div style={{
                     flex: 1,
                     maxWidth: '480px'
@@ -66,12 +66,11 @@ const AdminHeader = () => {
                                 e.target.style.background = 'rgba(51, 65, 85, 0.3)';
                                 e.target.style.boxShadow = 'none';
                             }}
-                            placeholder="Buscar en el panel general..."
                         />
                     </div>
                 </div>
 
-                {/* ACCIONES E INFORMACIÓN DE USUARIO - Modo Oscuro */}
+                {/* ACCIONES E INFORMACIÓN DE USUARIO */}
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -209,7 +208,6 @@ const AdminHeader = () => {
                 </div>
             </div>
 
-            {/* Animación de pulso para notificaciones */}
             <style>{`
                 @keyframes pulse {
                     0%, 100% { opacity: 1; transform: scale(1); }
