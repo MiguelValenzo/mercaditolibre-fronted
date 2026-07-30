@@ -41,7 +41,6 @@ const Profile = ({ user, onUpdateUser }) => {
             const email = localStorage.getItem('email');
             const nombre = localStorage.getItem('nombre');
             
-            // Intentar obtener el usuario completo
             let usuarioData = null;
             try {
                 usuarioData = await apiService.getUsuarioByEmail(email);
@@ -100,17 +99,18 @@ const Profile = ({ user, onUpdateUser }) => {
                 return;
             }
 
-            // Actualizar usuario
+            // ✅ LIMPIAR USERNAME
+            const usernameLimpio = perfil.username ? perfil.username.trim() : '';
+
             if (perfil.id) {
                 const usuarioData = {
                     nombre: perfil.nombre.trim(),
                     email: perfil.email.trim(),
                     direccion: perfil.direccion.trim(),
                     telefono: perfil.telefono.trim(),
-                    username: perfil.username
+                    username: usernameLimpio
                 };
 
-                // Si está cambiando contraseña
                 if (cambiandoPassword) {
                     if (!passwordData.nuevaPassword || passwordData.nuevaPassword.length < 6) {
                         setError('La contraseña debe tener al menos 6 caracteres');
@@ -125,11 +125,10 @@ const Profile = ({ user, onUpdateUser }) => {
                     usuarioData.password = passwordData.nuevaPassword;
                 }
 
-                // ✅ ACTUALIZAR USUARIO
+                console.log('📤 Enviando datos de usuario:', usuarioData);
                 const usuarioActualizado = await apiService.actualizarUsuario(perfil.id, usuarioData);
                 console.log('✅ Usuario actualizado:', usuarioActualizado);
 
-                // ✅ ACTUALIZAR CLIENTE
                 try {
                     await apiService.actualizarCliente(perfil.id, {
                         nombre: perfil.nombre.trim(),
@@ -143,20 +142,16 @@ const Profile = ({ user, onUpdateUser }) => {
                 }
             }
 
-            // ✅ Actualizar localStorage
             localStorage.setItem('nombre', perfil.nombre.trim());
             localStorage.setItem('email', perfil.email.trim());
             
-            // ✅ Si cambió la contraseña, actualizar el token (forzar nuevo login)
             if (cambiandoPassword) {
-                // ✅ Cerrar sesión para que el usuario use la nueva contraseña
                 localStorage.removeItem('token');
                 localStorage.removeItem('username');
                 localStorage.removeItem('email');
                 localStorage.removeItem('nombre');
                 localStorage.removeItem('rol');
                 
-                // ✅ Mostrar mensaje y redirigir al login
                 setExito(true);
                 setEditando(false);
                 setCambiandoPassword(false);
@@ -187,7 +182,7 @@ const Profile = ({ user, onUpdateUser }) => {
             setPasswordData({ nuevaPassword: '', confirmarPassword: '' });
             setTimeout(() => setExito(false), 3000);
         } catch (err) {
-            console.error('Error actualizando perfil:', err);
+            console.error('❌ Error actualizando perfil:', err);
             setError(err.message || 'Error al actualizar el perfil. Intente de nuevo.');
         } finally {
             setGuardando(false);
@@ -362,7 +357,6 @@ const Profile = ({ user, onUpdateUser }) => {
 
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                        {/* Username (solo lectura) */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{
                                 display: 'block',
@@ -397,7 +391,6 @@ const Profile = ({ user, onUpdateUser }) => {
                             </div>
                         </div>
 
-                        {/* Nombre */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{
                                 display: 'block',
@@ -455,7 +448,6 @@ const Profile = ({ user, onUpdateUser }) => {
                             </div>
                         </div>
 
-                        {/* Email (solo lectura) */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{
                                 display: 'block',
@@ -490,7 +482,6 @@ const Profile = ({ user, onUpdateUser }) => {
                             </div>
                         </div>
 
-                        {/* Teléfono */}
                         <div>
                             <label style={{
                                 display: 'block',
@@ -549,7 +540,6 @@ const Profile = ({ user, onUpdateUser }) => {
                             </div>
                         </div>
 
-                        {/* Dirección */}
                         <div>
                             <label style={{
                                 display: 'block',
@@ -609,7 +599,6 @@ const Profile = ({ user, onUpdateUser }) => {
                         </div>
                     </div>
 
-                    {/* Sección de Cambio de Contraseña */}
                     {editando && (
                         <div style={{
                             marginTop: '24px',
@@ -803,7 +792,6 @@ const Profile = ({ user, onUpdateUser }) => {
                         </div>
                     )}
 
-                    {/* Botones */}
                     <div style={{
                         marginTop: '28px',
                         paddingTop: '24px',
