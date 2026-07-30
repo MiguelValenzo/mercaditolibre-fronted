@@ -3,7 +3,7 @@ import { apiService } from '../services/apiService';
 import { 
     ShoppingCart, LogOut, User, LayoutDashboard, 
     ShoppingBag, Menu, X, ShieldCheck, LogIn, UserPlus, PackageCheck,
-    Sparkles, Store
+    Sparkles, Store, UserCircle
 } from 'lucide-react';
 
 export const Navbar = ({ vistaActual, setVistaActual, user, onLogout, cartCount, openCart }) => {
@@ -150,90 +150,176 @@ export const Navbar = ({ vistaActual, setVistaActual, user, onLogout, cartCount,
                         </button>
 
                         {isClient && (
-                            <button
-                                onClick={() => setVistaActual('miscompras')}
-                                style={{
-                                    padding: '10px 20px',
-                                    borderRadius: '30px',
-                                    fontSize: '13px',
-                                    fontWeight: '700',
-                                    transition: 'all 0.2s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    background: vistaActual === 'miscompras' 
-                                        ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
-                                        : 'rgba(51, 65, 85, 0.3)',
-                                    color: vistaActual === 'miscompras' 
-                                        ? '#ffffff' 
-                                        : '#94a3b8',
-                                    boxShadow: vistaActual === 'miscompras' 
-                                        ? '0 8px 16px -4px rgba(79, 70, 229, 0.3)'
-                                        : 'none'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (vistaActual !== 'miscompras') {
-                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
-                                        e.currentTarget.style.color = '#f1f5f9';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (vistaActual !== 'miscompras') {
-                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
-                                        e.currentTarget.style.color = '#94a3b8';
-                                    }
-                                }}
-                            >
-                                <PackageCheck style={{ width: '16px', height: '16px' }} />
-                                Mis Compras
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => setVistaActual('miscompras')}
+                                    style={{
+                                        padding: '10px 20px',
+                                        borderRadius: '30px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: vistaActual === 'miscompras' 
+                                            ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                            : 'rgba(51, 65, 85, 0.3)',
+                                        color: vistaActual === 'miscompras' 
+                                            ? '#ffffff' 
+                                            : '#94a3b8',
+                                        boxShadow: vistaActual === 'miscompras' 
+                                            ? '0 8px 16px -4px rgba(79, 70, 229, 0.3)'
+                                            : 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (vistaActual !== 'miscompras') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
+                                            e.currentTarget.style.color = '#f1f5f9';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (vistaActual !== 'miscompras') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                            e.currentTarget.style.color = '#94a3b8';
+                                        }
+                                    }}
+                                >
+                                    <PackageCheck style={{ width: '16px', height: '16px' }} />
+                                    Mis Compras
+                                </button>
+                                
+                                {/* ✅ BOTÓN MI PERFIL - PARA CLIENTES */}
+                                <button
+                                    onClick={() => setVistaActual('profile')}
+                                    style={{
+                                        padding: '10px 20px',
+                                        borderRadius: '30px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: vistaActual === 'profile' 
+                                            ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                            : 'rgba(51, 65, 85, 0.3)',
+                                        color: vistaActual === 'profile' 
+                                            ? '#ffffff' 
+                                            : '#94a3b8',
+                                        boxShadow: vistaActual === 'profile' 
+                                            ? '0 8px 16px -4px rgba(79, 70, 229, 0.3)'
+                                            : 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (vistaActual !== 'profile') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
+                                            e.currentTarget.style.color = '#f1f5f9';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (vistaActual !== 'profile') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                            e.currentTarget.style.color = '#94a3b8';
+                                        }
+                                    }}
+                                >
+                                    <UserCircle style={{ width: '16px', height: '16px' }} />
+                                    Mi Perfil
+                                </button>
+                            </>
                         )}
 
                         {isAdmin && (
-                            <button
-                                onClick={() => setVistaActual('admin-panel')}
-                                style={{
-                                    padding: '10px 20px',
-                                    borderRadius: '30px',
-                                    fontSize: '13px',
-                                    fontWeight: '700',
-                                    transition: 'all 0.2s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    background: vistaActual === 'admin-panel' 
-                                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-                                        : 'rgba(245, 158, 11, 0.15)',
-                                    color: vistaActual === 'admin-panel' 
-                                        ? '#ffffff' 
-                                        : '#fbbf24',
-                                    boxShadow: vistaActual === 'admin-panel' 
-                                        ? '0 8px 16px -4px rgba(245, 158, 11, 0.3)'
-                                        : 'none',
-                                    border: vistaActual !== 'admin-panel' 
-                                        ? '1px solid rgba(245, 158, 11, 0.2)'
-                                        : 'none'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (vistaActual !== 'admin-panel') {
-                                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.25)';
-                                        e.currentTarget.style.color = '#fbbf24';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (vistaActual !== 'admin-panel') {
-                                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.15)';
-                                        e.currentTarget.style.color = '#fbbf24';
-                                    }
-                                }}
-                            >
-                                <LayoutDashboard style={{ width: '16px', height: '16px' }} />
-                                Panel Admin
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => setVistaActual('admin-panel')}
+                                    style={{
+                                        padding: '10px 20px',
+                                        borderRadius: '30px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: vistaActual === 'admin-panel' 
+                                            ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                                            : 'rgba(245, 158, 11, 0.15)',
+                                        color: vistaActual === 'admin-panel' 
+                                            ? '#ffffff' 
+                                            : '#fbbf24',
+                                        boxShadow: vistaActual === 'admin-panel' 
+                                            ? '0 8px 16px -4px rgba(245, 158, 11, 0.3)'
+                                            : 'none',
+                                        border: vistaActual !== 'admin-panel' 
+                                            ? '1px solid rgba(245, 158, 11, 0.2)'
+                                            : 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (vistaActual !== 'admin-panel') {
+                                            e.currentTarget.style.background = 'rgba(245, 158, 11, 0.25)';
+                                            e.currentTarget.style.color = '#fbbf24';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (vistaActual !== 'admin-panel') {
+                                            e.currentTarget.style.background = 'rgba(245, 158, 11, 0.15)';
+                                            e.currentTarget.style.color = '#fbbf24';
+                                        }
+                                    }}
+                                >
+                                    <LayoutDashboard style={{ width: '16px', height: '16px' }} />
+                                    Panel Admin
+                                </button>
+                                
+                                {/* ✅ BOTÓN MI PERFIL - TAMBIÉN PARA ADMIN */}
+                                <button
+                                    onClick={() => setVistaActual('profile')}
+                                    style={{
+                                        padding: '10px 20px',
+                                        borderRadius: '30px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        transition: 'all 0.2s ease',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: vistaActual === 'profile' 
+                                            ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                            : 'rgba(51, 65, 85, 0.3)',
+                                        color: vistaActual === 'profile' 
+                                            ? '#ffffff' 
+                                            : '#94a3b8',
+                                        boxShadow: vistaActual === 'profile' 
+                                            ? '0 8px 16px -4px rgba(79, 70, 229, 0.3)'
+                                            : 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (vistaActual !== 'profile') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.5)';
+                                            e.currentTarget.style.color = '#f1f5f9';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (vistaActual !== 'profile') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                            e.currentTarget.style.color = '#94a3b8';
+                                        }
+                                    }}
+                                >
+                                    <UserCircle style={{ width: '16px', height: '16px' }} />
+                                    Mi Perfil
+                                </button>
+                            </>
                         )}
                     </nav>
 
@@ -591,85 +677,169 @@ export const Navbar = ({ vistaActual, setVistaActual, user, onLogout, cartCount,
                         </button>
 
                         {isClient && (
-                            <button
-                                onClick={() => { setVistaActual('miscompras'); setMobileMenuOpen(false); }}
-                                style={{
-                                    width: '100%',
-                                    padding: '12px 16px',
-                                    borderRadius: '12px',
-                                    fontSize: '14px',
-                                    fontWeight: '700',
-                                    textAlign: 'left',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    background: vistaActual === 'miscompras' 
-                                        ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
-                                        : 'transparent',
-                                    color: vistaActual === 'miscompras' 
-                                        ? '#ffffff' 
-                                        : '#94a3b8',
-                                    boxShadow: vistaActual === 'miscompras' 
-                                        ? '0 4px 12px rgba(79, 70, 229, 0.3)'
-                                        : 'none',
-                                    transition: 'all 0.2s ease'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (vistaActual !== 'miscompras') {
-                                        e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (vistaActual !== 'miscompras') {
-                                        e.currentTarget.style.background = 'transparent';
-                                    }
-                                }}
-                            >
-                                <PackageCheck style={{ width: '18px', height: '18px' }} /> Mis Compras
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => { setVistaActual('miscompras'); setMobileMenuOpen(false); }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: '700',
+                                        textAlign: 'left',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: vistaActual === 'miscompras' 
+                                            ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                            : 'transparent',
+                                        color: vistaActual === 'miscompras' 
+                                            ? '#ffffff' 
+                                            : '#94a3b8',
+                                        boxShadow: vistaActual === 'miscompras' 
+                                            ? '0 4px 12px rgba(79, 70, 229, 0.3)'
+                                            : 'none',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (vistaActual !== 'miscompras') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (vistaActual !== 'miscompras') {
+                                            e.currentTarget.style.background = 'transparent';
+                                        }
+                                    }}
+                                >
+                                    <PackageCheck style={{ width: '18px', height: '18px' }} /> Mis Compras
+                                </button>
+                                
+                                {/* ✅ BOTÓN MI PERFIL EN MENÚ MÓVIL */}
+                                <button
+                                    onClick={() => { setVistaActual('profile'); setMobileMenuOpen(false); }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: '700',
+                                        textAlign: 'left',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: vistaActual === 'profile' 
+                                            ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                            : 'transparent',
+                                        color: vistaActual === 'profile' 
+                                            ? '#ffffff' 
+                                            : '#94a3b8',
+                                        boxShadow: vistaActual === 'profile' 
+                                            ? '0 4px 12px rgba(79, 70, 229, 0.3)'
+                                            : 'none',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (vistaActual !== 'profile') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (vistaActual !== 'profile') {
+                                            e.currentTarget.style.background = 'transparent';
+                                        }
+                                    }}
+                                >
+                                    <UserCircle style={{ width: '18px', height: '18px' }} /> Mi Perfil
+                                </button>
+                            </>
                         )}
 
                         {isAdmin && (
-                            <button
-                                onClick={() => { setVistaActual('admin-panel'); setMobileMenuOpen(false); }}
-                                style={{
-                                    width: '100%',
-                                    padding: '12px 16px',
-                                    borderRadius: '12px',
-                                    fontSize: '14px',
-                                    fontWeight: '700',
-                                    textAlign: 'left',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    background: vistaActual === 'admin-panel' 
-                                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-                                        : 'rgba(245, 158, 11, 0.1)',
-                                    color: vistaActual === 'admin-panel' 
-                                        ? '#ffffff' 
-                                        : '#fbbf24',
-                                    boxShadow: vistaActual === 'admin-panel' 
-                                        ? '0 4px 12px rgba(245, 158, 11, 0.3)'
-                                        : 'none',
-                                    transition: 'all 0.2s ease'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (vistaActual !== 'admin-panel') {
-                                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.2)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (vistaActual !== 'admin-panel') {
-                                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
-                                    }
-                                }}
-                            >
-                                <LayoutDashboard style={{ width: '18px', height: '18px' }} /> Panel Admin
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => { setVistaActual('admin-panel'); setMobileMenuOpen(false); }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: '700',
+                                        textAlign: 'left',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: vistaActual === 'admin-panel' 
+                                            ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                                            : 'rgba(245, 158, 11, 0.1)',
+                                        color: vistaActual === 'admin-panel' 
+                                            ? '#ffffff' 
+                                            : '#fbbf24',
+                                        boxShadow: vistaActual === 'admin-panel' 
+                                            ? '0 4px 12px rgba(245, 158, 11, 0.3)'
+                                            : 'none',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (vistaActual !== 'admin-panel') {
+                                            e.currentTarget.style.background = 'rgba(245, 158, 11, 0.2)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (vistaActual !== 'admin-panel') {
+                                            e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
+                                        }
+                                    }}
+                                >
+                                    <LayoutDashboard style={{ width: '18px', height: '18px' }} /> Panel Admin
+                                </button>
+                                
+                                {/* ✅ BOTÓN MI PERFIL PARA ADMIN EN MENÚ MÓVIL */}
+                                <button
+                                    onClick={() => { setVistaActual('profile'); setMobileMenuOpen(false); }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px 16px',
+                                        borderRadius: '12px',
+                                        fontSize: '14px',
+                                        fontWeight: '700',
+                                        textAlign: 'left',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        background: vistaActual === 'profile' 
+                                            ? 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)'
+                                            : 'transparent',
+                                        color: vistaActual === 'profile' 
+                                            ? '#ffffff' 
+                                            : '#94a3b8',
+                                        boxShadow: vistaActual === 'profile' 
+                                            ? '0 4px 12px rgba(79, 70, 229, 0.3)'
+                                            : 'none',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (vistaActual !== 'profile') {
+                                            e.currentTarget.style.background = 'rgba(51, 65, 85, 0.3)';
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (vistaActual !== 'profile') {
+                                            e.currentTarget.style.background = 'transparent';
+                                        }
+                                    }}
+                                >
+                                    <UserCircle style={{ width: '18px', height: '18px' }} /> Mi Perfil
+                                </button>
+                            </>
                         )}
 
                         {!user ? (

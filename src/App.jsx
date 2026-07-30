@@ -9,6 +9,7 @@ import Cart from './components/Cart';
 import { CheckoutForm } from './components/CheckoutForm';
 import { Purchases } from './components/Purchases';
 import { apiService } from './services/apiService';
+import Profile from './components/Profile';
 
 function App() {
     const [vistaActual, setVistaActual] = useState('catalogo');
@@ -266,49 +267,55 @@ function App() {
         console.log(' Sesión cerrada, carrito guardado por usuario');
     };
 
-    const vistaContenido = () => {
-        switch (vistaActual) {
-            case 'catalogo':
-                return (
-                    <Catalogo
-                        setVistaActual={setVistaActual}
-                        user={user}
-                        addToCart={AddToCart}
-                        comprarAhora={comprarAhora}
-                    />
-                );
-            case 'admin-panel':
-                return <AdminPanel />;
-            case 'login':
-                return (
-                    <Login
-                        onLoginSuccess={handleLoginSuccess}
-                        onGoToRegister={() => setVistaActual('register')}
-                    />
-                );
-            case 'register':
-                return (
-                    <Registro
-                        onRegistroSuccess={() => setVistaActual('login')}
-                        onGoToLogin={() => setVistaActual('login')}
-                    />
-                );
-            case 'checkout':
-                return (
-                    <CheckoutForm
-                        ventaActiva={ventaActiva}
-                        setVistaActual={setVistaActual}
-                    />
-                );
-            case 'miscompras':
-    return (
-        <Purchases 
-            setVistaActual={setVistaActual} 
-            setVentaActiva={setVentaActiva} 
-        />
-    );
-        }
-    };
+   const vistaContenido = () => {
+    switch (vistaActual) {
+        case 'catalogo':
+            return (
+                <Catalogo
+                    setVistaActual={setVistaActual}
+                    user={user}
+                    addToCart={AddToCart}
+                    comprarAhora={comprarAhora}
+                />
+            );
+        case 'admin-panel':
+            return <AdminPanel />;
+        case 'login':
+            return (
+                <Login
+                    onLoginSuccess={handleLoginSuccess}
+                    onGoToRegister={() => setVistaActual('register')}
+                />
+            );
+        case 'register':
+            return (
+                <Registro
+                    onRegistroSuccess={() => setVistaActual('login')}
+                    onGoToLogin={() => setVistaActual('login')}
+                />
+            );
+        case 'checkout':
+            return (
+                <CheckoutForm
+                    ventaActiva={ventaActiva}
+                    setVistaActual={setVistaActual}
+                />
+            );
+        case 'miscompras':
+            return <Purchases />;
+        case 'profile':  // ✅ AGREGAR ESTA LÍNEA
+            return <Profile user={user} onUpdateUser={setUser} />;
+        default:
+            return (
+                <Catalogo
+                    setVistaActual={setVistaActual}
+                    user={user}
+                    addToCart={AddToCart}
+                    comprarAhora={comprarAhora}
+                />
+            );
+    }
+};
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">

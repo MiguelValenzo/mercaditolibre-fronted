@@ -14,7 +14,7 @@ const handleResponse = async (response) => {
 // Obtener headers con token
 const getHeaders = () => {
     const token = localStorage.getItem('token');
-    console.log('🔑 Token en headers:', token ? '✅ Token existe' : '❌ No hay token');
+    console.log(' Token en headers:', token ? '✅ Token existe' : ' No hay token');
     return {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : ''
@@ -93,7 +93,6 @@ export const apiService = {
         return handleResponse(response);
     },
 
-    // ✅ CORREGIDO: Usa getHeaders()
     crearProducto: async (producto) => {
         console.log('📦 Creando producto:', producto);
         const headers = getHeaders();
@@ -117,7 +116,6 @@ export const apiService = {
         return handleResponse(response);
     },
 
-    // ✅ CORREGIDO: Usa getHeaders()
     eliminarProducto: async (id) => {
         console.log('🗑️ Eliminando producto:', id);
         const response = await fetch(API_URL + 'productos/' + id, {
@@ -171,49 +169,56 @@ export const apiService = {
         return handleResponse(response);
     },
 
-    // =============================================
-    // CLIENTES
-    // =============================================
 
-    getClientes: async () => {
-        const response = await fetch(API_URL + 'clientes', {
-            headers: getHeaders()
-        });
-        return handleResponse(response);
-    },
+  // =============================================
+// CLIENTES
+// =============================================
 
-    getCliente: async (id) => {
-        const response = await fetch(API_URL + 'clientes/' + id, {
-            headers: getHeaders()
-        });
-        return handleResponse(response);
-    },
+getClientes: async () => {
+    console.log('👤 Obteniendo clientes...');
+    const response = await fetch(API_URL + 'clientes', {
+        headers: getHeaders()
+    });
+    return handleResponse(response);
+},
 
-    crearCliente: async (cliente) => {
-        const response = await fetch(API_URL + 'clientes', {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify(cliente),
-        });
-        return handleResponse(response);
-    },
+getCliente: async (id) => {
+    console.log('👤 Obteniendo cliente:', id);
+    const response = await fetch(API_URL + 'clientes/' + id, {
+        headers: getHeaders()
+    });
+    return handleResponse(response);
+},
 
-    actualizarCliente: async (id, cliente) => {
-        const response = await fetch(API_URL + 'clientes/' + id, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify(cliente),
-        });
-        return handleResponse(response);
-    },
+crearCliente: async (cliente) => {
+    console.log('👤 Creando cliente:', cliente);
+    const headers = getHeaders();
+    const response = await fetch(API_URL + 'clientes', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(cliente),
+    });
+    return handleResponse(response);
+},
 
-    eliminarCliente: async (id) => {
-        const response = await fetch(API_URL + 'clientes/' + id, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        return handleResponse(response);
-    },
+actualizarCliente: async (id, cliente) => {
+    console.log('👤 Actualizando cliente:', id, cliente);
+    const response = await fetch(API_URL + 'clientes/' + id, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(cliente),
+    });
+    return handleResponse(response);
+},
+
+eliminarCliente: async (id) => {
+    console.log('🗑️ Eliminando cliente:', id);
+    const response = await fetch(API_URL + 'clientes/' + id, {
+        method: 'DELETE',
+        headers: getHeaders()
+    });
+    return handleResponse(response);
+},
 
     // =============================================
     // PROVEEDORES
@@ -245,7 +250,7 @@ crearProveedor: async (proveedor) => {
 },
 
 actualizarProveedor: async (id, proveedor) => {
-    console.log('📦 Actualizando proveedor:', id, proveedor);
+    console.log(' Actualizando proveedor:', id, proveedor);
     const response = await fetch(API_URL + 'proveedores/' + id, {
         method: 'PUT',
         headers: getHeaders(),
@@ -255,7 +260,7 @@ actualizarProveedor: async (id, proveedor) => {
 },
 
 eliminarProveedor: async (id) => {
-    console.log('🗑️ Eliminando proveedor:', id);
+    console.log(' Eliminando proveedor:', id);
     const response = await fetch(API_URL + 'proveedores/' + id, {
         method: 'DELETE',
         headers: getHeaders()
@@ -283,15 +288,15 @@ eliminarProveedor: async (id) => {
 
  // Ventas - Procesar venta
 procesarVenta: async (venta) => {
-    console.log('📦 Enviando venta al backend:', venta);
+    console.log(' Enviando venta al backend:', venta);
     const headers = getHeaders();
-    console.log('📦 Headers:', headers);
+    console.log(' Headers:', headers);
     const response = await fetch(API_URL + 'ventas', {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(venta)
     });
-    console.log('📦 Respuesta status:', response.status);
+    console.log(' Respuesta status:', response.status);
     return handleResponse(response);
 },
 
@@ -314,7 +319,6 @@ procesarVenta: async (venta) => {
     // PAGOS (Stripe)
     // =============================================
 
-  // En apiService.js, la función crearIntencionPago debe ser:
 
 crearIntencionPago: async (idVenta) => {
     try {
@@ -324,10 +328,10 @@ crearIntencionPago: async (idVenta) => {
             body: JSON.stringify({ idVenta, moneda: 'mxn' })
         });
         const data = await handleResponse(response);
-        console.log('📦 Respuesta de crearIntencionPago:', data);
+        console.log(' Respuesta de crearIntencionPago:', data);
         return data;
     } catch (error) {
-        console.error('❌ Error en crearIntencionPago:', error);
+        console.error(' Error en crearIntencionPago:', error);
         // ✅ Devolver un objeto con modoPrueba en caso de error
         return {
             modoPrueba: true,

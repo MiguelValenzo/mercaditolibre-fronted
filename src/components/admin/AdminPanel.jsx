@@ -13,6 +13,10 @@ import ProveedorCrear from './proveedores/ProveedorCrear';
 import ProveedorEditar from './proveedores/ProveedorEditar';
 import VentasList from './ventas/VentasList';
 import VentaDetalle from './ventas/VentaDetalle';
+import ClientesList from './clientes/ClientesList';
+import ClienteCrear from './clientes/ClienteCrear';
+import ClienteEditar from './clientes/ClienteEditar';
+
 
 const AdminPanel = () => {
     // Estado principal
@@ -89,6 +93,20 @@ const AdminPanel = () => {
             console.log('💰 Mostrando VentasList');
             return <VentasList navegar={navegar} />;
         }
+
+        // ✅ CLIENTES
+if (seccionActual === 'clientes') {
+    if (subSeccion === 'crear') {
+        console.log('👤 Mostrando ClienteCrear');
+        return <ClienteCrear navegar={navegar} />;
+    }
+    if (subSeccion === 'editar') {
+        console.log('👤 Mostrando ClienteEditar');
+        return <ClienteEditar id={editandoId} navegar={navegar} />;
+    }
+    console.log('👤 Mostrando ClientesList');
+    return <ClientesList navegar={navegar} />;
+}
 
         // ✅ DASHBOARD
         console.log('📊 Mostrando AdminDashboard');
