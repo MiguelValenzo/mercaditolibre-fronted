@@ -163,7 +163,6 @@ const ProveedoresList = ({ navegar }) => {
                         <span style={{ fontSize: '12px', fontWeight: '600', color: '#e2e8f0' }}>Control Activo</span>
                     </div>
            
-// Busca el botón "Nuevo Proveedor" y asegúrate de que sea:
 <button
     onClick={() => navegar('proveedores', 'crear')}
     style={{
