@@ -41,22 +41,18 @@ const Purchases = ({ setVistaActual, setVentaActiva }) => {
 
         setPagandoId(venta.id);
         try {
-            // ✅ Crear una nueva intención de pago
             console.log('💰 Procesando pago para venta:', venta.id);
             
-            // Verificar que la venta tiene detalles
             if (!venta.detalles || venta.detalles.length === 0) {
                 mostrarMensaje('Esta venta no tiene productos para pagar.', 'error');
                 setPagandoId(null);
                 return;
             }
 
-            // ✅ Pasar la venta activa al checkout
             if (setVentaActiva) {
                 setVentaActiva(venta);
             }
             
-            // ✅ Redirigir al checkout
             if (setVistaActual) {
                 setVistaActual('checkout');
             }
@@ -72,7 +68,6 @@ const Purchases = ({ setVistaActual, setVentaActiva }) => {
     const handleReintentar = async (venta) => {
         setPagandoId(venta.id);
         try {
-            // Intentar crear una nueva venta con los mismos productos
             const detalles = venta.detalles.map(det => ({
                 producto: { id: det.producto.id },
                 cantidad: det.cantidad
@@ -81,7 +76,6 @@ const Purchases = ({ setVistaActual, setVentaActiva }) => {
             const nuevaVenta = await apiService.procesarVenta({ detalles });
             mostrarMensaje('Nueva orden creada. Redirigiendo al pago...', 'success');
             
-            // Redirigir al checkout con la nueva venta
             if (setVentaActiva) {
                 setVentaActiva(nuevaVenta);
             }
@@ -568,7 +562,6 @@ const Purchases = ({ setVistaActual, setVentaActiva }) => {
                                             gap: '12px',
                                             flexWrap: 'wrap'
                                         }}>
-                                            {/* Botón Pagar */}
                                             <button
                                                 onClick={() => handlePagar(venta)}
                                                 disabled={pagandoId === venta.id}
@@ -616,7 +609,6 @@ const Purchases = ({ setVistaActual, setVentaActiva }) => {
                                                 )}
                                             </button>
 
-                                            {/* Botón Reintentar */}
                                             <button
                                                 onClick={() => handleReintentar(venta)}
                                                 disabled={pagandoId === venta.id}
@@ -668,4 +660,5 @@ const Purchases = ({ setVistaActual, setVentaActiva }) => {
     );
 };
 
+// ✅ EXPORTACIÓN CORRECTA - SIN LLAVES
 export default Purchases;

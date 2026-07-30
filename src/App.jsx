@@ -7,9 +7,9 @@ import Login from './components/Login';
 import Registro from './components/Registro';
 import Cart from './components/Cart';
 import { CheckoutForm } from './components/CheckoutForm';
-import { Purchases } from './components/Purchases';
+// ✅ IMPORTACIÓN CORREGIDA - SIN LLAVES
+import Purchases from './components/Purchases';
 import { apiService } from './services/apiService';
-import Profile from './components/Profile';
 
 function App() {
     const [vistaActual, setVistaActual] = useState('catalogo');
@@ -20,10 +20,12 @@ function App() {
     const [adminSubTab, setAdminSubTab] = useState('usuarios');
     const [mensaje, setMensaje] = useState(null);
 
+    // ✅ Función para obtener la clave del carrito por usuario
     const getCartKey = (username) => {
         return `cart_${username}`;
     };
 
+    // ✅ Cargar usuario y carrito desde localStorage al iniciar
     useEffect(() => {
         const token = localStorage.getItem('token');
         const username = localStorage.getItem('username');
@@ -32,7 +34,7 @@ function App() {
         const rol = localStorage.getItem('rol');
 
         if (token && username) {
-            console.log(' Cargando usuario desde localStorage:', { username, email, nombre, rol });
+            console.log('📌 Cargando usuario desde localStorage:', { username, email, nombre, rol });
             setUser({
                 username,
                 email,
@@ -56,15 +58,15 @@ function App() {
         if (carritoGuardado) {
             try {
                 const carritoParseado = JSON.parse(carritoGuardado);
-                console.log(` Carrito cargado para ${username}:`, carritoParseado);
+                console.log(`🛒 Carrito cargado para ${username}:`, carritoParseado);
                 setCart(carritoParseado);
             } catch (error) {
-                console.error(' Error al cargar carrito:', error);
+                console.error('❌ Error al cargar carrito:', error);
                 localStorage.removeItem(cartKey);
                 setCart([]);
             }
         } else {
-            console.log(` No hay carrito guardado para ${username}`);
+            console.log(`🛒 No hay carrito guardado para ${username}`);
             setCart([]);
         }
     };
@@ -73,7 +75,7 @@ function App() {
     useEffect(() => {
         if (user && user.username) {
             const cartKey = getCartKey(user.username);
-            console.log(` Guardando carrito para ${user.username}:`, cart);
+            console.log(`🛒 Guardando carrito para ${user.username}:`, cart);
             localStorage.setItem(cartKey, JSON.stringify(cart));
         }
     }, [cart, user]);
@@ -84,7 +86,7 @@ function App() {
     };
 
     const guardarUsuario = (userData) => {
-        console.log(' Guardando usuario:', userData);
+        console.log('📌 Guardando usuario:', userData);
         
         if (userData.token) {
             localStorage.setItem('token', userData.token);
@@ -109,6 +111,7 @@ function App() {
             rol: userData.rol
         });
 
+        // ✅ Cargar carrito del nuevo usuario
         cargarCarritoPorUsuario(userData.username);
     };
 
@@ -119,7 +122,7 @@ function App() {
             return;
         }
 
-        console.log(` Añadiendo al carrito de ${user.username}:`, producto.nombre);
+        console.log(`📦 Añadiendo al carrito de ${user.username}:`, producto.nombre);
         setCart((prevCart) => {
             const existing = prevCart.find(
                 (item) => item.producto.id === producto.id
@@ -146,11 +149,11 @@ function App() {
     };
 
     const comprarAhora = async (producto) => {
-        console.log('Comprar ahora:', producto.nombre);
-        console.log('Usuario actual:', user);
+        console.log('⚡ Comprar ahora:', producto.nombre);
+        console.log('👤 Usuario actual:', user);
         
         if (!user) {
-            console.log(' No hay usuario, redirigiendo a login');
+            console.log('❌ No hay usuario, redirigiendo a login');
             setVistaActual('login');
             return;
         }
@@ -158,7 +161,7 @@ function App() {
         console.log('🔑 Rol del usuario:', user.rol);
         
         if (user.rol !== 'CLIENTE') {
-            console.log(' Usuario no es CLIENTE, es:', user.rol);
+            console.log('❌ Usuario no es CLIENTE, es:', user.rol);
             mostrarMensaje('Solo los clientes pueden realizar compras.', 'error');
             return;
         }
@@ -175,9 +178,9 @@ function App() {
                 ]
             };
 
-            console.log(' Enviando venta:', ventaPayload);
+            console.log('📦 Enviando venta:', ventaPayload);
             const venta = await apiService.procesarVenta(ventaPayload);
-            console.log(' Venta creada:', venta);
+            console.log('✅ Venta creada:', venta);
             
             setVentaActiva(venta);
             // ✅ Limpiar carrito del usuario después de comprar
@@ -188,7 +191,7 @@ function App() {
             setVistaActual('checkout');
             
         } catch (err) {
-            console.error(' Error al procesar la compra:', err);
+            console.error('❌ Error al procesar la compra:', err);
             mostrarMensaje(err.message || 'Error al procesar la compra', 'error');
         }
     };
@@ -233,7 +236,7 @@ function App() {
     const cartCount = user ? cart.reduce((sum, item) => sum + item.cantidad, 0) : 0;
 
     const handleLoginSuccess = (userData) => {
-        console.log(' Login exitoso, datos:', userData);
+        console.log('📌 Login exitoso, datos:', userData);
         guardarUsuario(userData);
         
         if (userData.rol === 'ADMIN') {
@@ -248,7 +251,7 @@ function App() {
         if (user && user.username) {
             const cartKey = getCartKey(user.username);
             localStorage.setItem(cartKey, JSON.stringify(cart));
-            console.log(` Carrito guardado para ${user.username} antes de cerrar sesión`);
+            console.log(`💾 Carrito guardado para ${user.username} antes de cerrar sesión`);
         }
         
         // ✅ Limpiar estado de usuario
@@ -264,58 +267,61 @@ function App() {
         localStorage.removeItem('rol');
         
         // ✅ El carrito se limpia de la vista porque cartCount es 0 al no haber usuario
-        console.log(' Sesión cerrada, carrito guardado por usuario');
+        console.log('🚪 Sesión cerrada, carrito guardado por usuario');
     };
 
-   const vistaContenido = () => {
-    switch (vistaActual) {
-        case 'catalogo':
-            return (
-                <Catalogo
-                    setVistaActual={setVistaActual}
-                    user={user}
-                    addToCart={AddToCart}
-                    comprarAhora={comprarAhora}
-                />
-            );
-        case 'admin-panel':
-            return <AdminPanel />;
-        case 'login':
-            return (
-                <Login
-                    onLoginSuccess={handleLoginSuccess}
-                    onGoToRegister={() => setVistaActual('register')}
-                />
-            );
-        case 'register':
-            return (
-                <Registro
-                    onRegistroSuccess={() => setVistaActual('login')}
-                    onGoToLogin={() => setVistaActual('login')}
-                />
-            );
-        case 'checkout':
-            return (
-                <CheckoutForm
-                    ventaActiva={ventaActiva}
-                    setVistaActual={setVistaActual}
-                />
-            );
-        case 'miscompras':
-            return <Purchases />;
-        case 'profile':  // ✅ AGREGAR ESTA LÍNEA
-            return <Profile user={user} onUpdateUser={setUser} />;
-        default:
-            return (
-                <Catalogo
-                    setVistaActual={setVistaActual}
-                    user={user}
-                    addToCart={AddToCart}
-                    comprarAhora={comprarAhora}
-                />
-            );
-    }
-};
+    const vistaContenido = () => {
+        switch (vistaActual) {
+            case 'catalogo':
+                return (
+                    <Catalogo
+                        setVistaActual={setVistaActual}
+                        user={user}
+                        addToCart={AddToCart}
+                        comprarAhora={comprarAhora}
+                    />
+                );
+            case 'admin-panel':
+                return <AdminPanel />;
+            case 'login':
+                return (
+                    <Login
+                        onLoginSuccess={handleLoginSuccess}
+                        onGoToRegister={() => setVistaActual('register')}
+                    />
+                );
+            case 'register':
+                return (
+                    <Registro
+                        onRegistroSuccess={() => setVistaActual('login')}
+                        onGoToLogin={() => setVistaActual('login')}
+                    />
+                );
+            case 'checkout':
+                return (
+                    <CheckoutForm
+                        ventaActiva={ventaActiva}
+                        setVistaActual={setVistaActual}
+                    />
+                );
+            case 'miscompras':
+                return (
+                    <Purchases 
+                        setVistaActual={setVistaActual} 
+                        setVentaActiva={setVentaActiva} 
+                    />
+                );
+            default:
+                return (
+                    <Catalogo
+                        setVistaActual={setVistaActual}
+                        user={user}
+                        addToCart={AddToCart}
+                        comprarAhora={comprarAhora}
+                    />
+                );
+        }
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 antialiased">
