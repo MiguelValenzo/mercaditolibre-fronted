@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/apiService';
 import { 
     User, Mail, Phone, MapPin, Save, Loader2, CheckCircle2, 
-    AlertCircle, ShieldCheck, UserCircle, Edit3
+    AlertCircle, UserCircle, Edit3, Lock, Eye, EyeOff, KeyRound
 } from 'lucide-react';
 
 const Profile = ({ user, onUpdateUser }) => {
@@ -10,6 +10,11 @@ const Profile = ({ user, onUpdateUser }) => {
     const [guardando, setGuardando] = useState(false);
     const [error, setError] = useState('');
     const [exito, setExito] = useState(false);
+    const [editando, setEditando] = useState(false);
+    const [cambiandoPassword, setCambiandoPassword] = useState(false);
+    const [mostrarPassword, setMostrarPassword] = useState(false);
+    const [mostrarConfirmPassword, setMostrarConfirmPassword] = useState(false);
+    
     const [perfil, setPerfil] = useState({
         id: '',
         nombre: '',
@@ -18,7 +23,11 @@ const Profile = ({ user, onUpdateUser }) => {
         direccion: '',
         username: ''
     });
-    const [editando, setEditando] = useState(false);
+
+    const [passwordData, setPasswordData] = useState({
+        nuevaPassword: '',
+        confirmarPassword: ''
+    });
 
     useEffect(() => {
         cargarPerfil();
@@ -32,31 +41,32 @@ const Profile = ({ user, onUpdateUser }) => {
             const email = localStorage.getItem('email');
             const nombre = localStorage.getItem('nombre');
             
-            setPerfil({
-                id: user?.id || '',
-                nombre: nombre || '',
-                email: email || '',
-                telefono: user?.telefono || '',
-                direccion: user?.direccion || '',
-                username: username || ''
-            });
-            
-            if (user && user.id) {
-                try {
-                    const clienteData = await apiService.getCliente(user.id);
-                    if (clienteData) {
-                        setPerfil({
-                            id: clienteData.id || user.id,
-                            nombre: clienteData.nombre || nombre,
-                            email: clienteData.email || email,
-                            telefono: clienteData.telefono || '',
-                            direccion: clienteData.direccion || '',
-                            username: username || ''
-                        });
-                    }
-                } catch (err) {
-                    console.log('No se encontró perfil de cliente, usando datos básicos');
-                }
+            // Intentar obtener el usuario completo
+            let usuarioData = null;
+            try {
+                usuarioData = await apiService.getUsuarioByEmail(email);
+            } catch (err) {
+                console.log('No se encontró usuario, usando datos básicos');
+            }
+
+            if (usuarioData) {
+                setPerfil({
+                    id: usuarioData.id || '',
+                    nombre: usuarioData.nombre || nombre,
+                    email: usuarioData.email || email,
+                    telefono: usuarioData.telefono || '',
+                    direccion: usuarioData.direccion || '',
+                    username: usuarioData.username || username
+                });
+            } else {
+                setPerfil({
+                    id: user?.id || '',
+                    nombre: nombre || '',
+                    email: email || '',
+                    telefono: user?.telefono || '',
+                    direccion: user?.direccion || '',
+                    username: username || ''
+                });
             }
         } catch (err) {
             console.error('Error cargando perfil:', err);
@@ -72,6 +82,11 @@ const Profile = ({ user, onUpdateUser }) => {
         if (exito) setExito(false);
     };
 
+    const handlePasswordChange = (e) => {
+        setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+        if (error) setError('');
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setGuardando(true);
@@ -85,23 +100,47 @@ const Profile = ({ user, onUpdateUser }) => {
                 return;
             }
 
+            // Actualizar usuario
             if (perfil.id) {
-                await apiService.actualizarCliente(perfil.id, {
+                const usuarioData = {
                     nombre: perfil.nombre.trim(),
                     email: perfil.email.trim(),
                     direccion: perfil.direccion.trim(),
-                    telefono: perfil.telefono.trim()
-                });
-            } else {
-                const nuevoCliente = await apiService.crearCliente({
-                    nombre: perfil.nombre.trim(),
-                    email: perfil.email.trim(),
-                    direccion: perfil.direccion.trim(),
-                    telefono: perfil.telefono.trim()
-                });
-                setPerfil({ ...perfil, id: nuevoCliente.id });
+                    telefono: perfil.telefono.trim(),
+                    username: perfil.username
+                };
+
+                // Si está cambiando contraseña
+                if (cambiandoPassword) {
+                    if (!passwordData.nuevaPassword || passwordData.nuevaPassword.length < 6) {
+                        setError('La contraseña debe tener al menos 6 caracteres');
+                        setGuardando(false);
+                        return;
+                    }
+                    if (passwordData.nuevaPassword !== passwordData.confirmarPassword) {
+                        setError('Las contraseñas no coinciden');
+                        setGuardando(false);
+                        return;
+                    }
+                    usuarioData.password = passwordData.nuevaPassword;
+                }
+
+                await apiService.actualizarUsuario(perfil.id, usuarioData);
+                
+                // Actualizar también el cliente si existe
+                try {
+                    await apiService.actualizarCliente(perfil.id, {
+                        nombre: perfil.nombre.trim(),
+                        email: perfil.email.trim(),
+                        direccion: perfil.direccion.trim(),
+                        telefono: perfil.telefono.trim()
+                    });
+                } catch (err) {
+                    console.log('No se pudo actualizar cliente:', err);
+                }
             }
 
+            // Actualizar localStorage
             localStorage.setItem('nombre', perfil.nombre.trim());
             localStorage.setItem('email', perfil.email.trim());
             
@@ -117,10 +156,12 @@ const Profile = ({ user, onUpdateUser }) => {
 
             setExito(true);
             setEditando(false);
+            setCambiandoPassword(false);
+            setPasswordData({ nuevaPassword: '', confirmarPassword: '' });
             setTimeout(() => setExito(false), 3000);
         } catch (err) {
             console.error('Error actualizando perfil:', err);
-            setError('Error al actualizar el perfil: ' + (err.message || 'Intente de nuevo.'));
+            setError(err.message || 'Error al actualizar el perfil. Intente de nuevo.');
         } finally {
             setGuardando(false);
         }
@@ -221,7 +262,7 @@ const Profile = ({ user, onUpdateUser }) => {
                             margin: '4px 0 0 0',
                             fontSize: '14px'
                         }}>
-                            Gestiona tu información personal
+                            Gestiona tu información personal y contraseña
                         </p>
                     </div>
                 </div>
@@ -522,6 +563,200 @@ const Profile = ({ user, onUpdateUser }) => {
                         </div>
                     </div>
 
+                    {/* Sección de Cambio de Contraseña */}
+                    {editando && (
+                        <div style={{
+                            marginTop: '24px',
+                            paddingTop: '20px',
+                            borderTop: '1px solid #334155'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                marginBottom: '16px'
+                            }}>
+                                <KeyRound style={{ width: '20px', height: '20px', color: '#818cf8' }} />
+                                <h3 style={{
+                                    fontSize: '14px',
+                                    fontWeight: '800',
+                                    color: '#f1f5f9',
+                                    margin: 0
+                                }}>
+                                    Cambiar Contraseña
+                                </h3>
+                                <span style={{
+                                    fontSize: '11px',
+                                    color: '#64748b',
+                                    marginLeft: 'auto'
+                                }}>
+                                    {cambiandoPassword ? 'Editando...' : 'Opcional'}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setCambiandoPassword(!cambiandoPassword)}
+                                    style={{
+                                        padding: '6px 14px',
+                                        borderRadius: '8px',
+                                        background: cambiandoPassword ? 'rgba(239, 68, 68, 0.15)' : 'rgba(79, 70, 229, 0.15)',
+                                        border: `1px solid ${cambiandoPassword ? 'rgba(239, 68, 68, 0.2)' : 'rgba(79, 70, 229, 0.2)'}`,
+                                        color: cambiandoPassword ? '#f87171' : '#818cf8',
+                                        fontSize: '11px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                >
+                                    {cambiandoPassword ? 'Cancelar' : 'Cambiar'}
+                                </button>
+                            </div>
+
+                            {cambiandoPassword && (
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: '1fr 1fr',
+                                    gap: '16px'
+                                }}>
+                                    <div>
+                                        <label style={{
+                                            display: 'block',
+                                            fontSize: '11px',
+                                            fontWeight: '700',
+                                            textTransform: 'uppercase',
+                                            color: '#94a3b8',
+                                            marginBottom: '6px',
+                                            letterSpacing: '0.5px'
+                                        }}>
+                                            Nueva Contraseña <span style={{ color: '#ef4444' }}>*</span>
+                                        </label>
+                                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                            <span style={{
+                                                position: 'absolute',
+                                                left: '14px',
+                                                color: '#818cf8',
+                                                pointerEvents: 'none'
+                                            }}>
+                                                <Lock style={{ width: '16px', height: '16px' }} />
+                                            </span>
+                                            <input
+                                                type={mostrarPassword ? 'text' : 'password'}
+                                                name="nuevaPassword"
+                                                value={passwordData.nuevaPassword}
+                                                onChange={handlePasswordChange}
+                                                placeholder="Mínimo 6 caracteres"
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '12px 18px 12px 44px',
+                                                    borderRadius: '10px',
+                                                    border: '1.5px solid #334155',
+                                                    background: '#0f172a',
+                                                    fontSize: '13px',
+                                                    color: '#f1f5f9',
+                                                    outline: 'none',
+                                                    transition: 'all 0.2s ease',
+                                                    boxSizing: 'border-box'
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.target.style.borderColor = '#4f46e5';
+                                                    e.target.style.background = '#1a1a2e';
+                                                    e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.target.style.borderColor = '#334155';
+                                                    e.target.style.background = '#0f172a';
+                                                    e.target.style.boxShadow = 'none';
+                                                }}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setMostrarPassword(!mostrarPassword)}
+                                                style={{
+                                                    position: 'absolute',
+                                                    right: '12px',
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    color: '#64748b',
+                                                    padding: '4px'
+                                                }}
+                                            >
+                                                {mostrarPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label style={{
+                                            display: 'block',
+                                            fontSize: '11px',
+                                            fontWeight: '700',
+                                            textTransform: 'uppercase',
+                                            color: '#94a3b8',
+                                            marginBottom: '6px',
+                                            letterSpacing: '0.5px'
+                                        }}>
+                                            Confirmar Contraseña <span style={{ color: '#ef4444' }}>*</span>
+                                        </label>
+                                        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                            <span style={{
+                                                position: 'absolute',
+                                                left: '14px',
+                                                color: '#818cf8',
+                                                pointerEvents: 'none'
+                                            }}>
+                                                <Lock style={{ width: '16px', height: '16px' }} />
+                                            </span>
+                                            <input
+                                                type={mostrarConfirmPassword ? 'text' : 'password'}
+                                                name="confirmarPassword"
+                                                value={passwordData.confirmarPassword}
+                                                onChange={handlePasswordChange}
+                                                placeholder="Repite la contraseña"
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '12px 18px 12px 44px',
+                                                    borderRadius: '10px',
+                                                    border: '1.5px solid #334155',
+                                                    background: '#0f172a',
+                                                    fontSize: '13px',
+                                                    color: '#f1f5f9',
+                                                    outline: 'none',
+                                                    transition: 'all 0.2s ease',
+                                                    boxSizing: 'border-box'
+                                                }}
+                                                onFocus={(e) => {
+                                                    e.target.style.borderColor = '#4f46e5';
+                                                    e.target.style.background = '#1a1a2e';
+                                                    e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
+                                                }}
+                                                onBlur={(e) => {
+                                                    e.target.style.borderColor = '#334155';
+                                                    e.target.style.background = '#0f172a';
+                                                    e.target.style.boxShadow = 'none';
+                                                }}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setMostrarConfirmPassword(!mostrarConfirmPassword)}
+                                                style={{
+                                                    position: 'absolute',
+                                                    right: '12px',
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    color: '#64748b',
+                                                    padding: '4px'
+                                                }}
+                                            >
+                                                {mostrarConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Botones */}
                     <div style={{
                         marginTop: '28px',
@@ -568,6 +803,8 @@ const Profile = ({ user, onUpdateUser }) => {
                                     type="button"
                                     onClick={() => {
                                         setEditando(false);
+                                        setCambiandoPassword(false);
+                                        setPasswordData({ nuevaPassword: '', confirmarPassword: '' });
                                         cargarPerfil();
                                     }}
                                     style={{
