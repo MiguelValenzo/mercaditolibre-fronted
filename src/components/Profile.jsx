@@ -28,7 +28,6 @@ const Profile = ({ user, onUpdateUser }) => {
         setLoading(true);
         setError('');
         try {
-            // Obtener los datos del usuario desde localStorage
             const username = localStorage.getItem('username');
             const email = localStorage.getItem('email');
             const nombre = localStorage.getItem('nombre');
@@ -42,7 +41,6 @@ const Profile = ({ user, onUpdateUser }) => {
                 username: username || ''
             });
             
-            // Si hay un usuario logueado, obtener datos completos
             if (user && user.id) {
                 try {
                     const clienteData = await apiService.getCliente(user.id);
@@ -81,14 +79,12 @@ const Profile = ({ user, onUpdateUser }) => {
         setExito(false);
 
         try {
-            // Validar campos
             if (!perfil.nombre.trim()) {
                 setError('El nombre es obligatorio');
                 setGuardando(false);
                 return;
             }
 
-            // Actualizar el cliente
             if (perfil.id) {
                 await apiService.actualizarCliente(perfil.id, {
                     nombre: perfil.nombre.trim(),
@@ -97,7 +93,6 @@ const Profile = ({ user, onUpdateUser }) => {
                     telefono: perfil.telefono.trim()
                 });
             } else {
-                // Si no tiene ID, crear cliente
                 const nuevoCliente = await apiService.crearCliente({
                     nombre: perfil.nombre.trim(),
                     email: perfil.email.trim(),
@@ -107,11 +102,9 @@ const Profile = ({ user, onUpdateUser }) => {
                 setPerfil({ ...perfil, id: nuevoCliente.id });
             }
 
-            // Actualizar localStorage
             localStorage.setItem('nombre', perfil.nombre.trim());
             localStorage.setItem('email', perfil.email.trim());
             
-            // Actualizar el estado del usuario en App.jsx
             if (onUpdateUser) {
                 onUpdateUser({
                     ...user,
@@ -242,7 +235,6 @@ const Profile = ({ user, onUpdateUser }) => {
                 padding: '32px',
                 boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)'
             }}>
-                {/* Mensajes de error y éxito */}
                 {error && (
                     <div style={{
                         background: 'rgba(239, 68, 68, 0.15)',
@@ -376,7 +368,7 @@ const Profile = ({ user, onUpdateUser }) => {
                             </div>
                         </div>
 
-                        {/* Email */}
+                        {/* Email (solo lectura) */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{
                                 display: 'block',
@@ -576,7 +568,7 @@ const Profile = ({ user, onUpdateUser }) => {
                                     type="button"
                                     onClick={() => {
                                         setEditando(false);
-                                        cargarPerfil(); // Recargar datos originales
+                                        cargarPerfil();
                                     }}
                                     style={{
                                         padding: '14px 32px',

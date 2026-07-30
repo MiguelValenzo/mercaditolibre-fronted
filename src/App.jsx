@@ -7,8 +7,9 @@ import Login from './components/Login';
 import Registro from './components/Registro';
 import Cart from './components/Cart';
 import { CheckoutForm } from './components/CheckoutForm';
-// ✅ IMPORTACIÓN CORREGIDA - SIN LLAVES
 import Purchases from './components/Purchases';
+// ✅ IMPORTAR PROFILE
+import Profile from './components/Profile';
 import { apiService } from './services/apiService';
 
 function App() {
@@ -311,6 +312,9 @@ function App() {
                         setVentaActiva={setVentaActiva} 
                     />
                 );
+            // ✅ AGREGAR CASO PARA PROFILE
+            case 'profile':
+                return <Profile user={user} onUpdateUser={setUser} />;
             default:
                 return (
                     <Catalogo

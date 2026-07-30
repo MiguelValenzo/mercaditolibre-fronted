@@ -8,18 +8,19 @@ import {
     LogOut,
     Store,
     ShieldCheck,
-    Sparkles
+    Sparkles,
+    Users  // ✅ AGREGAR IMPORTACIÓN DE Users
 } from 'lucide-react';
 
 const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
-const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'productos', label: 'Productos', icon: Package },
-    { id: 'categorias', label: 'Categorías', icon: FolderTree },
-    { id: 'proveedores', label: 'Proveedores', icon: Truck },
-    { id: 'ventas', label: 'Ventas', icon: ShoppingBag },
-    { id: 'clientes', label: 'Clientes', icon: Users }, // ✅ AGREGAR ESTA LÍNEA
-];
+    const menuItems = [
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { id: 'productos', label: 'Productos', icon: Package },
+        { id: 'categorias', label: 'Categorías', icon: FolderTree },
+        { id: 'proveedores', label: 'Proveedores', icon: Truck },
+        { id: 'ventas', label: 'Ventas', icon: ShoppingBag },
+        { id: 'clientes', label: 'Clientes', icon: Users },  // ✅ AGREGAR CLIENTES
+    ];
 
     return (
         <aside style={{
