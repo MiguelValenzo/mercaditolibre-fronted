@@ -16,16 +16,14 @@ import VentaDetalle from './ventas/VentaDetalle';
 import ClientesList from './clientes/ClientesList';
 import ClienteCrear from './clientes/ClienteCrear';
 import ClienteEditar from './clientes/ClienteEditar';
-
+// ✅ No importamos Usuarios
 
 const AdminPanel = () => {
-    // Estado principal
     const [seccionActual, setSeccionActual] = useState('dashboard');
     const [subSeccion, setSubSeccion] = useState('list');
     const [editandoId, setEditandoId] = useState(null);
     const [verId, setVerId] = useState(null);
 
-    // ✅ Función de navegación CORREGIDA
     const navegar = (seccion, sub = 'list', id = null) => {
         console.log('🔀 Navegando a:', seccion, sub, id);
         setSeccionActual(seccion);
@@ -44,72 +42,39 @@ const AdminPanel = () => {
         
         // ✅ PRODUCTOS
         if (seccionActual === 'productos') {
-            if (subSeccion === 'crear') {
-                console.log('📦 Mostrando ProductoCrear');
-                return <ProductoCrear navegar={navegar} />;
-            }
-            if (subSeccion === 'editar') {
-                console.log('📦 Mostrando ProductoEditar');
-                return <ProductoEditar productoId={editandoId} navegar={navegar} />;
-            }
-            console.log('📦 Mostrando ProductosList');
+            if (subSeccion === 'crear') return <ProductoCrear navegar={navegar} />;
+            if (subSeccion === 'editar') return <ProductoEditar productoId={editandoId} navegar={navegar} />;
             return <ProductosList navegar={navegar} />;
         }
 
         // ✅ CATEGORÍAS
         if (seccionActual === 'categorias') {
-            if (subSeccion === 'crear') {
-                console.log('📂 Mostrando CategoriaCrear');
-                return <CategoriaCrear navegar={navegar} />;
-            }
-            if (subSeccion === 'editar') {
-                console.log('📂 Mostrando CategoriaEditar');
-                return <CategoriaEditar id={editandoId} navegar={navegar} />;
-            }
-            console.log('📂 Mostrando CategoriasList');
+            if (subSeccion === 'crear') return <CategoriaCrear navegar={navegar} />;
+            if (subSeccion === 'editar') return <CategoriaEditar id={editandoId} navegar={navegar} />;
             return <CategoriasList navegar={navegar} />;
         }
 
         // ✅ PROVEEDORES
         if (seccionActual === 'proveedores') {
-            if (subSeccion === 'crear') {
-                console.log('🚚 Mostrando ProveedorCrear');
-                return <ProveedorCrear navegar={navegar} />;
-            }
-            if (subSeccion === 'editar') {
-                console.log('🚚 Mostrando ProveedorEditar');
-                return <ProveedorEditar id={editandoId} navegar={navegar} />;
-            }
-            console.log('🚚 Mostrando ProveedoresList');
+            if (subSeccion === 'crear') return <ProveedorCrear navegar={navegar} />;
+            if (subSeccion === 'editar') return <ProveedorEditar id={editandoId} navegar={navegar} />;
             return <ProveedoresList navegar={navegar} />;
         }
 
         // ✅ VENTAS
         if (seccionActual === 'ventas') {
-            if (subSeccion === 'ver') {
-                console.log('💰 Mostrando VentaDetalle');
-                return <VentaDetalle id={verId} navegar={navegar} />;
-            }
-            console.log('💰 Mostrando VentasList');
+            if (subSeccion === 'ver') return <VentaDetalle id={verId} navegar={navegar} />;
             return <VentasList navegar={navegar} />;
         }
 
         // ✅ CLIENTES
-if (seccionActual === 'clientes') {
-    if (subSeccion === 'crear') {
-        console.log('👤 Mostrando ClienteCrear');
-        return <ClienteCrear navegar={navegar} />;
-    }
-    if (subSeccion === 'editar') {
-        console.log('👤 Mostrando ClienteEditar');
-        return <ClienteEditar id={editandoId} navegar={navegar} />;
-    }
-    console.log('👤 Mostrando ClientesList');
-    return <ClientesList navegar={navegar} />;
-}
+        if (seccionActual === 'clientes') {
+            if (subSeccion === 'crear') return <ClienteCrear navegar={navegar} />;
+            if (subSeccion === 'editar') return <ClienteEditar id={editandoId} navegar={navegar} />;
+            return <ClientesList navegar={navegar} />;
+        }
 
         // ✅ DASHBOARD
-        console.log('📊 Mostrando AdminDashboard');
         return <AdminDashboard />;
     };
 

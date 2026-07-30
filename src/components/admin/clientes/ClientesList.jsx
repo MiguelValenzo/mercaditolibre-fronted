@@ -216,12 +216,9 @@ const ClientesList = ({ navegar }) => {
                     color: '#fca5a5', 
                     marginBottom: '24px',
                     fontSize: '13px',
-                    fontWeight: '600',
-                    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.1)'
+                    fontWeight: '600'
                 }}>
-                    <div style={{ background: '#ef4444', color: 'white', padding: '8px', borderRadius: '10px', display: 'flex' }}>
-                        <AlertCircle style={{ width: '18px', height: '18px' }} />
-                    </div>
+                    <ShieldCheck style={{ width: '18px', height: '18px', color: '#f87171' }} />
                     <span>{error}</span>
                 </div>
             )}

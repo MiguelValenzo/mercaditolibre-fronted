@@ -9,7 +9,7 @@ import {
     Store,
     ShieldCheck,
     Sparkles,
-    Users  // ✅ AGREGAR IMPORTACIÓN DE Users
+    Users
 } from 'lucide-react';
 
 const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
@@ -19,7 +19,7 @@ const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
         { id: 'categorias', label: 'Categorías', icon: FolderTree },
         { id: 'proveedores', label: 'Proveedores', icon: Truck },
         { id: 'ventas', label: 'Ventas', icon: ShoppingBag },
-        { id: 'clientes', label: 'Clientes', icon: Users },  // ✅ AGREGAR CLIENTES
+        { id: 'clientes', label: 'Clientes', icon: Users },
     ];
 
     return (

@@ -1,31 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../../../services/apiService';
-import { Save, ArrowLeft, User, Mail, Phone, MapPin, Loader2, AlertCircle, CheckCircle2, ShieldCheck, Users } from 'lucide-react';
+import { 
+    Save, ArrowLeft, User, Mail, Phone, MapPin, 
+    Loader2, AlertCircle, CheckCircle2, ShieldCheck, 
+    Users, Lock, Eye, EyeOff, KeyRound
+} from 'lucide-react';
 
 const ClienteEditar = ({ id, navegar }) => {
     const [carga, setCarga] = useState(true);
     const [guardando, setGuardando] = useState(false);
     const [error, setError] = useState('');
     const [exito, setExito] = useState(false);
+    const [mostrarPassword, setMostrarPassword] = useState(false);
+    const [cambiandoPassword, setCambiandoPassword] = useState(false);
     
+    // Datos del cliente
     const [formData, setFormData] = useState({
         nombre: '',
         email: '',
         telefono: '',
-        direccion: ''
+        direccion: '',
+        username: ''
+    });
+
+    // Datos del usuario (para contraseña)
+    const [usuarioData, setUsuarioData] = useState({
+        id: '',
+        password: ''
     });
 
     useEffect(() => {
         const cargarDatos = async () => {
             try {
-                const data = await apiService.getCliente(id);
-                console.log('👤 Cliente cargado:', data);
+                // Cargar cliente
+                const cliente = await apiService.getCliente(id);
+                console.log('👤 Cliente cargado:', cliente);
+                
                 setFormData({
-                    nombre: data.nombre || '',
-                    email: data.email || '',
-                    telefono: data.telefono || '',
-                    direccion: data.direccion || ''
+                    nombre: cliente.nombre || '',
+                    email: cliente.email || '',
+                    telefono: cliente.telefono || '',
+                    direccion: cliente.direccion || '',
+                    username: ''
                 });
+
+                // Intentar obtener el usuario asociado
+                try {
+                    const usuario = await apiService.getUsuarioByEmail(cliente.email);
+                    if (usuario) {
+                        setUsuarioData({
+                            id: usuario.id || '',
+                            password: ''
+                        });
+                        setFormData(prev => ({
+                            ...prev,
+                            username: usuario.username || ''
+                        }));
+                    }
+                } catch (err) {
+                    console.log('No se encontró usuario asociado');
+                }
             } catch (err) {
                 console.error('❌ Error cargando cliente:', err);
                 setError('Error cargando los datos para la edición: ' + (err.message || 'Intente de nuevo.'));
@@ -47,13 +81,18 @@ const ClienteEditar = ({ id, navegar }) => {
         if (error) setError('');
     };
 
+    const handlePasswordChange = (e) => {
+        setUsuarioData({ ...usuarioData, [e.target.name]: e.target.value });
+        if (error) setError('');
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setExito(false);
 
         if (!formData.nombre.trim()) {
-            setError('El nombre del cliente es obligatorio.');
+            setError('El nombre es obligatorio.');
             return;
         }
 
@@ -67,9 +106,15 @@ const ClienteEditar = ({ id, navegar }) => {
             return;
         }
 
+        if (cambiandoPassword && (!usuarioData.password || usuarioData.password.length < 6)) {
+            setError('La contraseña debe tener al menos 6 caracteres.');
+            return;
+        }
+
         setGuardando(true);
 
         try {
+            // 1. Actualizar cliente
             const clienteData = {
                 nombre: formData.nombre.trim(),
                 email: formData.email.trim(),
@@ -79,7 +124,25 @@ const ClienteEditar = ({ id, navegar }) => {
             
             console.log('👤 Actualizando cliente:', id, clienteData);
             await apiService.actualizarCliente(id, clienteData);
-            
+
+            // 2. Si hay usuario, actualizarlo
+            if (usuarioData.id) {
+                const usuarioUpdate = {
+                    nombre: formData.nombre.trim(),
+                    email: formData.email.trim(),
+                    username: formData.username,
+                    direccion: formData.direccion.trim(),
+                    telefono: formData.telefono.trim()
+                };
+
+                if (cambiandoPassword && usuarioData.password) {
+                    usuarioUpdate.password = usuarioData.password;
+                }
+
+                console.log('👤 Actualizando usuario:', usuarioData.id, usuarioUpdate);
+                await apiService.actualizarUsuario(usuarioData.id, usuarioUpdate);
+            }
+
             setExito(true);
             setTimeout(() => {
                 navegar('clientes', 'list');
@@ -142,6 +205,7 @@ const ClienteEditar = ({ id, navegar }) => {
             paddingRight: '24px',
             boxSizing: 'border-box'
         }}>
+            {/* Header */}
             <div style={{ 
                 background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)', 
                 borderRadius: '28px', 
@@ -236,6 +300,7 @@ const ClienteEditar = ({ id, navegar }) => {
                 </div>
             </div>
 
+            {/* Formulario */}
             <div style={{ 
                 background: '#0f172a', 
                 borderRadius: '28px', 
@@ -255,8 +320,7 @@ const ClienteEditar = ({ id, navegar }) => {
                         color: '#fca5a5', 
                         marginBottom: '30px',
                         fontSize: '13px',
-                        fontWeight: '600',
-                        boxShadow: '0 4px 12px rgba(239, 68, 68, 0.1)'
+                        fontWeight: '600'
                     }}>
                         <div style={{ background: '#ef4444', color: 'white', padding: '8px', borderRadius: '10px', display: 'flex' }}>
                             <AlertCircle style={{ width: '18px', height: '18px' }} />
@@ -277,8 +341,7 @@ const ClienteEditar = ({ id, navegar }) => {
                         color: '#6ee7b7', 
                         marginBottom: '30px',
                         fontSize: '13px',
-                        fontWeight: '600',
-                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.1)'
+                        fontWeight: '600'
                     }}>
                         <div style={{ background: '#10b981', color: 'white', padding: '8px', borderRadius: '10px', display: 'flex' }}>
                             <CheckCircle2 style={{ width: '18px', height: '18px' }} />
@@ -290,9 +353,64 @@ const ClienteEditar = ({ id, navegar }) => {
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '28px', marginBottom: '35px' }}>
                         
+                        {/* Username (solo lectura) */}
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                Usuario
+                            </label>
+                            <div style={{
+                                padding: '14px 18px',
+                                background: 'rgba(51, 65, 85, 0.2)',
+                                borderRadius: '12px',
+                                border: '1px solid #334155',
+                                color: '#94a3b8',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px'
+                            }}>
+                                <User style={{ width: '18px', height: '18px', color: '#64748b' }} />
+                                <span>{formData.username || 'No disponible'}</span>
+                                <span style={{
+                                    fontSize: '10px',
+                                    color: '#64748b',
+                                    marginLeft: 'auto'
+                                }}>
+                                    No editable
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Email (solo lectura) */}
+                        <div>
+                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                Correo Electrónico
+                            </label>
+                            <div style={{
+                                padding: '14px 18px',
+                                background: 'rgba(51, 65, 85, 0.2)',
+                                borderRadius: '12px',
+                                border: '1px solid #334155',
+                                color: '#94a3b8',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px'
+                            }}>
+                                <Mail style={{ width: '18px', height: '18px', color: '#64748b' }} />
+                                <span>{formData.email || 'No disponible'}</span>
+                                <span style={{
+                                    fontSize: '10px',
+                                    color: '#64748b',
+                                    marginLeft: 'auto'
+                                }}>
+                                    No editable
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Nombre */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
-                                Nombre del Cliente <span style={{ color: '#ef4444' }}>*</span>
+                                Nombre Completo <span style={{ color: '#ef4444' }}>*</span>
                             </label>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                 <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
@@ -302,10 +420,9 @@ const ClienteEditar = ({ id, navegar }) => {
                                     type="text"
                                     name="nombre"
                                     required
-                                    maxLength={100}
                                     value={formData.nombre}
                                     onChange={handleChange}
-                                    placeholder="Ej: Juan Pérez"
+                                    placeholder="Nombre completo del cliente"
                                     style={{
                                         width: '100%',
                                         padding: '16px 18px 16px 52px',
@@ -333,48 +450,7 @@ const ClienteEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        <div>
-                            <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
-                                Correo Electrónico <span style={{ color: '#ef4444' }}>*</span>
-                            </label>
-                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                                <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
-                                    <Mail style={{ width: '20px', height: '20px' }} />
-                                </span>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    required
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    placeholder="cliente@email.com"
-                                    style={{
-                                        width: '100%',
-                                        padding: '16px 18px 16px 52px',
-                                        borderRadius: '16px',
-                                        border: '1.5px solid #1e293b',
-                                        background: '#0f172a',
-                                        fontSize: '14px',
-                                        fontWeight: '500',
-                                        color: '#f1f5f9',
-                                        outline: 'none',
-                                        transition: 'all 0.2s ease',
-                                        boxSizing: 'border-box'
-                                    }}
-                                    onFocus={(e) => {
-                                        e.target.style.borderColor = '#4f46e5';
-                                        e.target.style.background = '#1a1a2e';
-                                        e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
-                                    }}
-                                    onBlur={(e) => {
-                                        e.target.style.borderColor = '#1e293b';
-                                        e.target.style.background = '#0f172a';
-                                        e.target.style.boxShadow = 'none';
-                                    }}
-                                />
-                            </div>
-                        </div>
-
+                        {/* Teléfono */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Teléfono
@@ -416,7 +492,8 @@ const ClienteEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        <div style={{ gridColumn: '1 / -1' }}>
+                        {/* Dirección */}
+                        <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Dirección
                             </label>
@@ -457,8 +534,108 @@ const ClienteEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
+                        {/* Cambio de Contraseña */}
+                        <div style={{ gridColumn: '1 / -1' }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                marginBottom: '10px'
+                            }}>
+                                <KeyRound style={{ width: '18px', height: '18px', color: '#818cf8' }} />
+                                <span style={{
+                                    fontSize: '12px',
+                                    fontWeight: '700',
+                                    textTransform: 'uppercase',
+                                    color: '#94a3b8',
+                                    letterSpacing: '0.5px'
+                                }}>
+                                    Cambiar Contraseña
+                                </span>
+                                <span style={{
+                                    fontSize: '11px',
+                                    color: '#64748b',
+                                    marginLeft: 'auto'
+                                }}>
+                                    {cambiandoPassword ? 'Editando...' : 'Opcional'}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setCambiandoPassword(!cambiandoPassword)}
+                                    style={{
+                                        padding: '6px 14px',
+                                        borderRadius: '8px',
+                                        background: cambiandoPassword ? 'rgba(239, 68, 68, 0.15)' : 'rgba(79, 70, 229, 0.15)',
+                                        border: `1px solid ${cambiandoPassword ? 'rgba(239, 68, 68, 0.2)' : 'rgba(79, 70, 229, 0.2)'}`,
+                                        color: cambiandoPassword ? '#f87171' : '#818cf8',
+                                        fontSize: '11px',
+                                        fontWeight: '700',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                >
+                                    {cambiandoPassword ? 'Cancelar' : 'Cambiar'}
+                                </button>
+                            </div>
+
+                            {cambiandoPassword && (
+                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                    <span style={{ position: 'absolute', left: '18px', color: '#818cf8', display: 'flex', pointerEvents: 'none' }}>
+                                        <Lock style={{ width: '20px', height: '20px' }} />
+                                    </span>
+                                    <input
+                                        type={mostrarPassword ? 'text' : 'password'}
+                                        name="password"
+                                        minLength="6"
+                                        value={usuarioData.password}
+                                        onChange={handlePasswordChange}
+                                        placeholder="Nueva contraseña (mínimo 6 caracteres)"
+                                        style={{
+                                            width: '100%',
+                                            padding: '16px 18px 16px 52px',
+                                            borderRadius: '16px',
+                                            border: '1.5px solid #1e293b',
+                                            background: '#0f172a',
+                                            fontSize: '14px',
+                                            fontWeight: '500',
+                                            color: '#f1f5f9',
+                                            outline: 'none',
+                                            transition: 'all 0.2s ease',
+                                            boxSizing: 'border-box'
+                                        }}
+                                        onFocus={(e) => {
+                                            e.target.style.borderColor = '#4f46e5';
+                                            e.target.style.background = '#1a1a2e';
+                                            e.target.style.boxShadow = '0 0 0 4px rgba(79, 70, 229, 0.15)';
+                                        }}
+                                        onBlur={(e) => {
+                                            e.target.style.borderColor = '#1e293b';
+                                            e.target.style.background = '#0f172a';
+                                            e.target.style.boxShadow = 'none';
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setMostrarPassword(!mostrarPassword)}
+                                        style={{
+                                            position: 'absolute',
+                                            right: '14px',
+                                            background: 'none',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            color: '#94a3b8',
+                                            padding: '4px'
+                                        }}
+                                    >
+                                        {mostrarPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
                     </div>
 
+                    {/* Botones */}
                     <div style={{ 
                         display: 'flex', 
                         justifyContent: 'flex-end', 

@@ -125,9 +125,11 @@ const Profile = ({ user, onUpdateUser }) => {
                     usuarioData.password = passwordData.nuevaPassword;
                 }
 
-                await apiService.actualizarUsuario(perfil.id, usuarioData);
-                
-                // Actualizar también el cliente si existe
+                // ✅ ACTUALIZAR USUARIO
+                const usuarioActualizado = await apiService.actualizarUsuario(perfil.id, usuarioData);
+                console.log('✅ Usuario actualizado:', usuarioActualizado);
+
+                // ✅ ACTUALIZAR CLIENTE
                 try {
                     await apiService.actualizarCliente(perfil.id, {
                         nombre: perfil.nombre.trim(),
@@ -135,15 +137,40 @@ const Profile = ({ user, onUpdateUser }) => {
                         direccion: perfil.direccion.trim(),
                         telefono: perfil.telefono.trim()
                     });
+                    console.log('✅ Cliente actualizado');
                 } catch (err) {
                     console.log('No se pudo actualizar cliente:', err);
                 }
             }
 
-            // Actualizar localStorage
+            // ✅ Actualizar localStorage
             localStorage.setItem('nombre', perfil.nombre.trim());
             localStorage.setItem('email', perfil.email.trim());
             
+            // ✅ Si cambió la contraseña, actualizar el token (forzar nuevo login)
+            if (cambiandoPassword) {
+                // ✅ Cerrar sesión para que el usuario use la nueva contraseña
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+                localStorage.removeItem('email');
+                localStorage.removeItem('nombre');
+                localStorage.removeItem('rol');
+                
+                // ✅ Mostrar mensaje y redirigir al login
+                setExito(true);
+                setEditando(false);
+                setCambiandoPassword(false);
+                setPasswordData({ nuevaPassword: '', confirmarPassword: '' });
+                
+                setTimeout(() => {
+                    alert('✅ Contraseña actualizada. Por favor, inicia sesión nuevamente con tu nueva contraseña.');
+                    window.location.reload();
+                }, 1500);
+                
+                setGuardando(false);
+                return;
+            }
+
             if (onUpdateUser) {
                 onUpdateUser({
                     ...user,
@@ -295,7 +322,7 @@ const Profile = ({ user, onUpdateUser }) => {
                     </div>
                 )}
 
-                {exito && (
+                {exito && !cambiandoPassword && (
                     <div style={{
                         background: 'rgba(16, 185, 129, 0.15)',
                         border: '1px solid #065f46',
@@ -311,6 +338,25 @@ const Profile = ({ user, onUpdateUser }) => {
                     }}>
                         <CheckCircle2 style={{ width: '18px', height: '18px', color: '#6ee7b7' }} />
                         <span>¡Perfil actualizado exitosamente!</span>
+                    </div>
+                )}
+
+                {exito && cambiandoPassword && (
+                    <div style={{
+                        background: 'rgba(251, 191, 36, 0.15)',
+                        border: '1px solid rgba(251, 191, 36, 0.3)',
+                        padding: '14px 18px',
+                        borderRadius: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        color: '#fbbf24',
+                        marginBottom: '20px',
+                        fontSize: '13px',
+                        fontWeight: '600'
+                    }}>
+                        <KeyRound style={{ width: '18px', height: '18px', color: '#fbbf24' }} />
+                        <span>¡Contraseña actualizada! Redirigiendo al login...</span>
                     </div>
                 )}
 
