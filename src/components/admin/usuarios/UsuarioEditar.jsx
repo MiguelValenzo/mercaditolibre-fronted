@@ -108,6 +108,19 @@ const UsuarioEditar = ({ id, navegar }) => {
             console.log('👤 Actualizando usuario:', id, usuarioData);
             await apiService.actualizarUsuario(id, usuarioData);
             
+            // También actualizar el cliente si existe
+            try {
+                await apiService.actualizarCliente(id, {
+                    nombre: formData.nombre.trim(),
+                    email: formData.email.trim(),
+                    direccion: formData.direccion.trim(),
+                    telefono: formData.telefono.trim()
+                });
+                console.log('✅ Cliente actualizado');
+            } catch (err) {
+                console.log('No se pudo actualizar cliente:', err);
+            }
+
             setExito(true);
             setTimeout(() => {
                 navegar('usuarios', 'list');
@@ -318,7 +331,6 @@ const UsuarioEditar = ({ id, navegar }) => {
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '28px', marginBottom: '35px' }}>
                         
-                        {/* Nombre */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Nombre Completo <span style={{ color: '#ef4444' }}>*</span>
@@ -361,7 +373,6 @@ const UsuarioEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Username */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Nombre de Usuario <span style={{ color: '#ef4444' }}>*</span>
@@ -404,7 +415,6 @@ const UsuarioEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Email */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Correo Electrónico <span style={{ color: '#ef4444' }}>*</span>
@@ -447,7 +457,6 @@ const UsuarioEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Teléfono */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Teléfono
@@ -489,7 +498,6 @@ const UsuarioEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Dirección */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Dirección
@@ -531,7 +539,6 @@ const UsuarioEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Rol */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Rol del Usuario <span style={{ color: '#ef4444' }}>*</span>
@@ -581,7 +588,6 @@ const UsuarioEditar = ({ id, navegar }) => {
                             </div>
                         </div>
 
-                        {/* Cambio de Contraseña */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <div style={{
                                 display: 'flex',
@@ -682,7 +688,6 @@ const UsuarioEditar = ({ id, navegar }) => {
 
                     </div>
 
-                    {/* Botones */}
                     <div style={{ 
                         display: 'flex', 
                         justifyContent: 'flex-end', 
