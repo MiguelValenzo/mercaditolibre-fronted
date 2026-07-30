@@ -9,7 +9,8 @@ import {
     Store,
     ShieldCheck,
     Sparkles,
-    Users
+    Users,
+    UserCog
 } from 'lucide-react';
 
 const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
@@ -20,6 +21,7 @@ const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
         { id: 'proveedores', label: 'Proveedores', icon: Truck },
         { id: 'ventas', label: 'Ventas', icon: ShoppingBag },
         { id: 'clientes', label: 'Clientes', icon: Users },
+        { id: 'usuarios', label: 'Usuarios', icon: UserCog },
     ];
 
     return (
@@ -263,7 +265,6 @@ const AdminSidebar = ({ seccionActual, setSeccionActual, onLogout }) => {
                     </span>
                 </button>
 
-                {/* Badge de versión */}
                 <div style={{
                     marginTop: '12px',
                     display: 'flex',

@@ -16,7 +16,10 @@ import VentaDetalle from './ventas/VentaDetalle';
 import ClientesList from './clientes/ClientesList';
 import ClienteCrear from './clientes/ClienteCrear';
 import ClienteEditar from './clientes/ClienteEditar';
-// ✅ No importamos Usuarios
+// ✅ IMPORTAR USUARIOS
+import UsuariosList from './usuarios/UsuariosList';
+import UsuarioCrear from './usuarios/UsuarioCrear';
+import UsuarioEditar from './usuarios/UsuarioEditar';
 
 const AdminPanel = () => {
     const [seccionActual, setSeccionActual] = useState('dashboard');
@@ -40,41 +43,42 @@ const AdminPanel = () => {
     const renderSeccion = () => {
         console.log('📌 Renderizando sección:', seccionActual, subSeccion);
         
-        // ✅ PRODUCTOS
         if (seccionActual === 'productos') {
             if (subSeccion === 'crear') return <ProductoCrear navegar={navegar} />;
             if (subSeccion === 'editar') return <ProductoEditar productoId={editandoId} navegar={navegar} />;
             return <ProductosList navegar={navegar} />;
         }
 
-        // ✅ CATEGORÍAS
         if (seccionActual === 'categorias') {
             if (subSeccion === 'crear') return <CategoriaCrear navegar={navegar} />;
             if (subSeccion === 'editar') return <CategoriaEditar id={editandoId} navegar={navegar} />;
             return <CategoriasList navegar={navegar} />;
         }
 
-        // ✅ PROVEEDORES
         if (seccionActual === 'proveedores') {
             if (subSeccion === 'crear') return <ProveedorCrear navegar={navegar} />;
             if (subSeccion === 'editar') return <ProveedorEditar id={editandoId} navegar={navegar} />;
             return <ProveedoresList navegar={navegar} />;
         }
 
-        // ✅ VENTAS
         if (seccionActual === 'ventas') {
             if (subSeccion === 'ver') return <VentaDetalle id={verId} navegar={navegar} />;
             return <VentasList navegar={navegar} />;
         }
 
-        // ✅ CLIENTES
         if (seccionActual === 'clientes') {
             if (subSeccion === 'crear') return <ClienteCrear navegar={navegar} />;
             if (subSeccion === 'editar') return <ClienteEditar id={editandoId} navegar={navegar} />;
             return <ClientesList navegar={navegar} />;
         }
 
-        // ✅ DASHBOARD
+        // ✅ USUARIOS
+        if (seccionActual === 'usuarios') {
+            if (subSeccion === 'crear') return <UsuarioCrear navegar={navegar} />;
+            if (subSeccion === 'editar') return <UsuarioEditar id={editandoId} navegar={navegar} />;
+            return <UsuariosList navegar={navegar} />;
+        }
+
         return <AdminDashboard />;
     };
 

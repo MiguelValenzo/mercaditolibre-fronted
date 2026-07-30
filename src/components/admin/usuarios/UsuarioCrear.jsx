@@ -3,7 +3,7 @@ import { apiService } from '../../../services/apiService';
 import { 
     Save, ArrowLeft, User, Mail, Phone, MapPin, 
     Loader2, AlertCircle, CheckCircle2, ShieldCheck, 
-    Users, Lock, UserCog, Eye, EyeOff
+    Users, Lock, UserCog, Eye, EyeOff, Shield
 } from 'lucide-react';
 
 const UsuarioCrear = ({ navegar }) => {
@@ -248,7 +248,6 @@ const UsuarioCrear = ({ navegar }) => {
                 <form onSubmit={handleSubmit}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '28px', marginBottom: '35px' }}>
                         
-                        {/* Nombre */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Nombre Completo <span style={{ color: '#ef4444' }}>*</span>
@@ -291,7 +290,6 @@ const UsuarioCrear = ({ navegar }) => {
                             </div>
                         </div>
 
-                        {/* Username y Email */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Nombre de Usuario <span style={{ color: '#ef4444' }}>*</span>
@@ -376,7 +374,6 @@ const UsuarioCrear = ({ navegar }) => {
                             </div>
                         </div>
 
-                        {/* Contraseña */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Contraseña <span style={{ color: '#ef4444' }}>*</span>
@@ -435,7 +432,6 @@ const UsuarioCrear = ({ navegar }) => {
                             </div>
                         </div>
 
-                        {/* Teléfono */}
                         <div>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Teléfono
@@ -477,7 +473,6 @@ const UsuarioCrear = ({ navegar }) => {
                             </div>
                         </div>
 
-                        {/* Dirección */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Dirección
@@ -519,7 +514,6 @@ const UsuarioCrear = ({ navegar }) => {
                             </div>
                         </div>
 
-                        {/* Rol */}
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '10px', letterSpacing: '0.5px' }}>
                                 Rol del Usuario <span style={{ color: '#ef4444' }}>*</span>
@@ -571,7 +565,6 @@ const UsuarioCrear = ({ navegar }) => {
 
                     </div>
 
-                    {/* Botones */}
                     <div style={{ 
                         display: 'flex', 
                         justifyContent: 'flex-end', 

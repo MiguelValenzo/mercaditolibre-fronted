@@ -47,7 +47,8 @@ const UsuariosList = ({ navegar }) => {
     };
 
     const cambiarRol = async (id, nuevoRol) => {
-        if (confirm(`¿Cambiar el rol de este usuario a ${nuevoRol}?`)) {
+        const rolTexto = nuevoRol === 'ROLE_ADMIN' ? 'Administrador' : 'Cliente';
+        if (confirm(`¿Cambiar el rol de este usuario a ${rolTexto}?`)) {
             try {
                 await apiService.cambiarRol(id, nuevoRol);
                 cargarUsuarios();
@@ -59,8 +60,8 @@ const UsuariosList = ({ navegar }) => {
 
     const getRolBadge = (rol) => {
         const roles = {
-            'ROLE_ADMIN': { color: 'rgba(239, 68, 68, 0.15)', textColor: '#f87171', icon: Shield },
-            'ROLE_CLIENTE': { color: 'rgba(16, 185, 129, 0.15)', textColor: '#6ee7b7', icon: UserCheck },
+            'ROLE_ADMIN': { color: 'rgba(239, 68, 68, 0.15)', textColor: '#f87171', icon: Shield, label: 'Admin' },
+            'ROLE_CLIENTE': { color: 'rgba(16, 185, 129, 0.15)', textColor: '#6ee7b7', icon: UserCheck, label: 'Cliente' },
         };
         const r = roles[rol] || roles['ROLE_CLIENTE'];
         const Icon = r.icon;
@@ -78,7 +79,7 @@ const UsuariosList = ({ navegar }) => {
                 border: `1px solid ${r.color}`
             }}>
                 <Icon style={{ width: '12px', height: '12px' }} />
-                {rol === 'ROLE_ADMIN' ? 'Admin' : 'Cliente'}
+                {r.label}
             </span>
         );
     };
